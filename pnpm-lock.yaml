@@ -97,6 +97,40 @@ importers:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(sass@1.99.0)(tsx@4.21.0)
 
+  examples/vite-react:
+    dependencies:
+      '@base-ui/react':
+        specifier: ^1.4.1
+        version: 1.4.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@ncai/design-system-temp':
+        specifier: workspace:*
+        version: link:../../packages/react
+      '@ncai/design-tokens-temp':
+        specifier: workspace:*
+        version: link:../../packages/tokens
+      '@vitejs/plugin-react':
+        specifier: ^6.0.1
+        version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(sass@1.99.0)(tsx@4.21.0))
+      react:
+        specifier: ^19.2.5
+        version: 19.2.5
+      react-dom:
+        specifier: ^19.2.5
+        version: 19.2.5(react@19.2.5)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.10
+        version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(sass@1.99.0)(tsx@4.21.0)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+
   packages/cli:
     dependencies:
       '@ncai/design-system-metadata-temp':

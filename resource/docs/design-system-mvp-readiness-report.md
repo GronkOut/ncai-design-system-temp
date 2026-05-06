@@ -31,9 +31,9 @@
 
 `validate_ui_code`가 Base UI 직접 import, 임의 색상, arbitrary value, 미승인 아이콘 외에도 표준 Tailwind 색상 클래스, spacing/radius/shadow/size 유틸리티, 조건부 `className`, `clsx`/`classnames`/`cn` 조합, CSS module className 사용을 탐지하도록 확장했다. 여전히 런타임 computed style이나 외부 변수 추적까지는 하지 않으므로 장기적으로는 ESLint plugin 또는 AST 기반 validator가 다음 확장 지점이다.
 
-### Medium. examples/playground가 아직 없다
+### Resolved. `examples/vite-react`를 추가했다
 
-로드맵의 `examples/vite-react`, `examples/next-react`, `apps/playground`는 아직 없다. 당장 배포를 막는 문제는 아니지만, npm 배포 후 실제 설치 검증과 사용자 온보딩을 위해 Vite 예제 하나는 빠르게 추가하는 편이 좋다.
+`examples/vite-react`를 추가해 외부 사용자가 설치하는 방식에 가까운 Vite React 예제를 제공한다. `smoke:pack`은 npm tarball을 만든 뒤 이 예제 앱에 실제로 설치하고 Vite build까지 실행하므로, 단순 export smoke test보다 배포 후 사용 환경에 가까운 검증이 가능하다.
 
 ## 배포 준비 상태
 
@@ -62,5 +62,4 @@ pnpm smoke:pack
 ## 다음 단계 추천
 
 1. 토큰 JSON/schema/deprecated alias 산출물을 추가한다.
-2. `examples/vite-react`를 만들어 npm tarball 설치를 더 실제 환경에 가깝게 검증한다.
-3. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 템플릿을 만든다.
+2. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 템플릿을 만든다.

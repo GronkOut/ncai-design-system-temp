@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  background: var(--ncai-color-bg-canvas);
+  color: var(--ncai-color-text-primary);
+  font-family: var(--ncai-font-family-sans);
+}
+
+.example-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--ncai-space-5);
+}
+
+.example-card {
+  width: min(100%, 420px);
+  padding: var(--ncai-space-5);
+  border: 1px solid var(--ncai-color-border-muted);
+  border-radius: var(--ncai-radius-md);
+  background: var(--ncai-color-bg-surface);
+}
+
+.example-eyebrow {
+  margin: 0 0 var(--ncai-space-2);
+  color: var(--ncai-color-text-secondary);
+  font-size: var(--ncai-font-size-caption);
+  line-height: var(--ncai-line-height-caption);
+}
+
+.example-card h1 {
+  margin: 0 0 var(--ncai-space-3);
+  font-size: var(--ncai-font-size-label-lg);
+  line-height: var(--ncai-line-height-label-lg);
+}
+
+.example-description {
+  margin: 0 0 var(--ncai-space-4);
+  color: var(--ncai-color-text-secondary);
+  font-size: var(--ncai-font-size-label-md);
+  line-height: var(--ncai-line-height-label-md);
+}
+
+.example-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ncai-space-2);
+}

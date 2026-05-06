@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +9,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const tempRoot = resolve(tmpdir(), 'ncai-design-system-pack-smoke');
 const tarballDir = resolve(tempRoot, 'tarballs');
 const consumerDir = resolve(tempRoot, 'consumer');
+const exampleSourceDir = resolve(root, 'examples/vite-react');
+const exampleConsumerDir = resolve(tempRoot, 'vite-react-example');
 
 const packageDirs = [
   'packages/metadata',
@@ -113,3 +115,28 @@ if (reactPackageJson.dependencies['@ncai/design-icons-temp']?.startsWith('worksp
 }
 
 console.log('All package tarballs install correctly in an isolated consumer.');
+
+await cp(exampleSourceDir, exampleConsumerDir, {
+  recursive: true,
+  filter: (source) => {
+    const normalized = source.replaceAll('\\', '/');
+    return !normalized.includes('/node_modules') && !normalized.includes('/dist');
+  }
+});
+
+const examplePackageJson = JSON.parse(await readFile(resolve(exampleConsumerDir, 'package.json'), 'utf8'));
+examplePackageJson.dependencies = {
+  ...examplePackageJson.dependencies,
+  ...internalDeps
+};
+examplePackageJson.pnpm = {
+  ...(examplePackageJson.pnpm ?? {}),
+  overrides: internalDeps
+};
+
+await writeFile(resolve(exampleConsumerDir, 'package.json'), `${JSON.stringify(examplePackageJson, null, 2)}\n`);
+
+run('pnpm', ['install'], exampleConsumerDir);
+run('pnpm', ['build'], exampleConsumerDir);
+
+console.log('Vite React example builds correctly with packed tarballs.');

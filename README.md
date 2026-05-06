@@ -70,6 +70,8 @@ npx @ncai/design-system-mcp-temp
 
 `apps/storybook`은 로컬 문서와 시각 확인용 Storybook 앱입니다. npm 배포 대상이 아니라 개발/QA용 앱으로 유지합니다.
 
+`examples/vite-react`는 외부 사용자가 설치하는 방식에 가까운 Vite React 예제입니다. `smoke:pack`은 npm tarball을 만든 뒤 이 예제 앱에 실제로 설치하고 Vite build까지 실행합니다.
+
 `resource`는 토큰 원본과 로드맵 등 설계 참고 자료를 둡니다. `resource/docs/baseui-mcp-skills-roadmap.md`는 장기 구조 기준 문서이며, `resource/token/figma.scss`는 현재 토큰 alias의 원천 참고 파일입니다.
 
 ## 로컬 개발
@@ -88,8 +90,14 @@ pnpm storybook
 - `pnpm typecheck`: 각 워크스페이스의 TypeScript 검사를 실행합니다.
 - `pnpm test`: React 컴포넌트 테스트와 MCP validation 테스트를 실행합니다.
 - `pnpm storybook`: 로컬 Storybook을 실행합니다.
-- `pnpm smoke:pack`: npm publish 전 tarball을 만들고 임시 소비자 프로젝트에 설치해 exports와 파일 구성을 확인합니다.
+- `pnpm smoke:pack`: npm publish 전 tarball을 만들고 임시 소비자 프로젝트와 `examples/vite-react`에 설치해 exports, 파일 구성, Vite build를 확인합니다.
 - `pnpm mcp`: 로컬 MCP 서버를 source 상태로 실행합니다.
+
+Vite 예제만 직접 확인할 때:
+
+```bash
+pnpm --filter @ncai/design-system-example-vite-react-temp build
+```
 
 ## Checkbox
 
