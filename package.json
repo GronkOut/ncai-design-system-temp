@@ -15,6 +15,7 @@
     "test": "turbo test",
     "smoke:pack": "node scripts/smoke-pack.mjs",
     "typecheck": "turbo typecheck",
+    "validate": "turbo validate",
     "version-packages": "changeset version",
     "mcp": "pnpm --filter @ncai/design-system-mcp-temp start"
   },

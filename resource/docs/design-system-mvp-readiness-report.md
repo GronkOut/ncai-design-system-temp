@@ -15,17 +15,17 @@
 
 `packages/cli`의 `doctor`가 소비자 프로젝트의 React 버전, 필수 `@ncai/*-temp` 패키지 설치 여부, 설치된 디자인 시스템 패키지 버전 정렬, 스타일 import, MCP 설정, Cursor Skill 설치 여부를 진단하도록 보완했다. 이제 외부 사용자는 `npx @ncai/design-system-cli-temp doctor`로 설치 누락과 설정 문제를 바로 확인할 수 있다.
 
-### High. metadata schema가 아직 타입 계약 수준에 머문다
+### Resolved. metadata schema와 component별 분리를 추가했다
 
-`packages/metadata/src/index.ts`가 단일 소스 역할을 하지만 JSON schema, component별 metadata 파일 분리, deprecated/migration 필드는 아직 없다. 컴포넌트가 늘어나면 한 파일에 규칙과 예제가 계속 쌓이므로 `components/Checkbox.metadata.ts` 같은 구조와 schema validation을 추가하는 것이 좋다.
+`packages/metadata/src/schema.ts`에 공통 metadata 타입, JSON schema, validation 함수를 추가했고, `Checkbox` metadata를 `packages/metadata/src/components/Checkbox.metadata.ts`로 분리했다. 각 컴포넌트 metadata는 `deprecated`와 `migration` 필드를 항상 포함하며, `pnpm --filter @ncai/design-system-metadata-temp validate`로 계약을 검증할 수 있다.
 
 ### High. 토큰 파이프라인은 MVP에는 충분하지만 공개 운영에는 검증이 부족하다
 
 현재 토큰은 `resource/token/figma.scss`를 참조해 CSS variables로 노출하는 구조라 빠른 시작에는 적절하다. 다만 로드맵에서 말한 `tokens.json`, `tokens.schema.json`, deprecated alias, diff 요약은 아직 없다. 디자인 변경이 잦아질수록 토큰 이름 변경과 삭제를 CI에서 막는 검증이 필요하다.
 
-### Medium. `Checkbox`는 MVP 컴포넌트로는 잘 구성되어 있다
+### Resolved. `Checkbox` 정책을 metadata validation과 테스트로 고정했다
 
-`Checkbox`는 Base UI wrapper, token 기반 CSS, Storybook 상태 문서, unit/a11y test, metadata가 함께 있어 첫 컴포넌트 기준으로는 좋다. 다만 컴포넌트가 늘어나기 전에 `style` prop 금지 정책, `className` 사용 범위, component token naming 규칙을 테스트 또는 lint로 고정하는 것이 좋다.
+`Checkbox` metadata에 `stylePolicy`와 `componentTokens`를 추가했고, metadata validation에서 `style` prop 노출 금지, `className`의 layout-only 설명, `checkbox.*` component token naming을 검사하도록 했다. React 테스트도 `style` prop이 공개 타입 계약에 없고 `className`이 root에만 병합되는지 확인한다.
 
 ### Medium. MCP validation은 방향은 좋지만 정규식 기반 한계가 명확하다
 
@@ -53,6 +53,7 @@ GitHub Actions의 CI와 Release workflow는 기본적으로 적절하다. `NPM_T
 
 ```bash
 pnpm typecheck
+pnpm validate
 pnpm test
 pnpm build
 pnpm smoke:pack
@@ -60,7 +61,6 @@ pnpm smoke:pack
 
 ## 다음 단계 추천
 
-1. metadata를 component별 파일과 schema validation 구조로 분리한다.
-2. 토큰 JSON/schema/deprecated alias 산출물을 추가한다.
-3. `examples/vite-react`를 만들어 npm tarball 설치를 더 실제 환경에 가깝게 검증한다.
-4. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 규칙과 테스트 템플릿을 확정한다.
+1. 토큰 JSON/schema/deprecated alias 산출물을 추가한다.
+2. `examples/vite-react`를 만들어 npm tarball 설치를 더 실제 환경에 가깝게 검증한다.
+3. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 템플릿을 만든다.

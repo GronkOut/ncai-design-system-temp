@@ -27,6 +27,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --out-dir dist --clean",
     "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate": "pnpm build && node scripts/validate-metadata.mjs"
   }
 }

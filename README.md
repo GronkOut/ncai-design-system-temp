@@ -60,6 +60,8 @@ npx @ncai/design-system-mcp-temp
 
 `packages/metadata`는 `@ncai/design-system-metadata-temp`입니다. 컴포넌트, 토큰, 아이콘 metadata의 단일 소스이며 React 패키지, MCP, CLI가 같은 데이터를 보도록 합니다.
 
+컴포넌트 metadata는 `packages/metadata/src/components/*.metadata.ts`에 컴포넌트별로 둡니다. 공통 타입과 JSON schema는 `packages/metadata/src/schema.ts`에 있으며, `pnpm --filter @ncai/design-system-metadata-temp validate`로 metadata 계약을 검증합니다.
+
 `packages/mcp`는 `@ncai/design-system-mcp-temp`입니다. 에이전트가 컴포넌트 사용법, 승인 토큰, 승인 아이콘을 조회하고 UI 코드 검증을 수행할 수 있는 stdio MCP 서버입니다.
 
 `packages/skills`는 `@ncai/design-system-skills-temp`입니다. Cursor Agent Skill 형식의 정적 규칙을 제공합니다. 상세 데이터는 Skill에 복사하지 않고 MCP와 metadata를 조회하도록 유도합니다.
@@ -106,9 +108,12 @@ export function AgreementField() {
 - `shape`: `square` 또는 `circle`
 - `warning`: 미선택 상태의 경고 보더
 - `indeterminate`: 일부 선택 상태
+- `className`: 레이아웃 보정 목적에만 사용
 - Base UI `Checkbox.Root`에서 전달되는 `checked`, `defaultChecked`, `disabled`, `required`, `name`, `value`, `onCheckedChange` 등
 
 접근 가능한 이름은 필수입니다. 외부 `<label>`로 연결하거나 `aria-label`을 전달해야 합니다.
+
+`style` prop은 공개 타입 계약에서 제외합니다. 색상, spacing, radius, typography는 임의 style이 아니라 metadata에 정의된 component token과 `--ncai-*` CSS variable로 관리합니다. `className`은 root에만 병합되며 색상/크기 변경이 아닌 레이아웃 훅으로만 사용합니다.
 
 ```tsx
 <Checkbox aria-label="항목 선택" shape="circle" />
@@ -120,7 +125,7 @@ export function AgreementField() {
 - `packages/react/src/components/Checkbox/Checkbox.tsx`
 - `packages/react/src/components/Checkbox/Checkbox.css`
 - `apps/storybook/src/Checkbox.stories.tsx`
-- `packages/metadata/src/index.ts`
+- `packages/metadata/src/components/Checkbox.metadata.ts`
 
 ## MCP와 Agent Skill
 
@@ -207,10 +212,13 @@ packages/react/src/components/ComponentName/
 그리고 다음 파일을 함께 갱신합니다.
 
 - `packages/react/src/index.ts`
+- `packages/metadata/src/components/ComponentName.metadata.ts`
 - `packages/metadata/src/index.ts`
 - `apps/storybook/src/ComponentName.stories.tsx`
 - 필요한 경우 `packages/icons` 또는 `packages/tokens`
 - 필요한 경우 `packages/mcp/src/validation.ts`와 `packages/skills/company-ui/SKILL.md`
+
+metadata에는 `deprecated`와 `migration` 필드를 항상 포함합니다. 아직 deprecated가 아니어도 `deprecated: { isDeprecated: false }`, `migration: { notes: [] }`를 명시해 추후 버전 변경과 migration 문서를 같은 구조로 관리합니다.
 
 ## 배포
 
@@ -228,6 +236,7 @@ npm public 배포 대상:
 
 ```bash
 pnpm typecheck
+pnpm validate
 pnpm test
 pnpm build
 pnpm smoke:pack
