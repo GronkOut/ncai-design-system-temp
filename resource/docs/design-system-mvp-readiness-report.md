@@ -27,9 +27,9 @@
 
 `Checkbox` metadata에 `stylePolicy`와 `componentTokens`를 추가했고, metadata validation에서 `style` prop 노출 금지, `className`의 layout-only 설명, `checkbox.*` component token naming을 검사하도록 했다. React 테스트도 `style` prop이 공개 타입 계약에 없고 `className`이 root에만 병합되는지 확인한다.
 
-### Medium. MCP validation은 방향은 좋지만 정규식 기반 한계가 명확하다
+### Resolved. MCP validation 탐지 범위를 확장했다
 
-`validate_ui_code`는 Base UI 직접 import, 임의 색상, arbitrary value, 미승인 아이콘을 탐지한다. 현재 MVP에는 충분하지만 실제 사용자 코드에서는 조건부 className, CSS module, 표준 Tailwind 색상 클래스 등을 놓칠 수 있다. 이후 ESLint plugin 또는 AST 기반 validator로 확장하는 것이 적절하다.
+`validate_ui_code`가 Base UI 직접 import, 임의 색상, arbitrary value, 미승인 아이콘 외에도 표준 Tailwind 색상 클래스, spacing/radius/shadow/size 유틸리티, 조건부 `className`, `clsx`/`classnames`/`cn` 조합, CSS module className 사용을 탐지하도록 확장했다. 여전히 런타임 computed style이나 외부 변수 추적까지는 하지 않으므로 장기적으로는 ESLint plugin 또는 AST 기반 validator가 다음 확장 지점이다.
 
 ### Medium. examples/playground가 아직 없다
 
