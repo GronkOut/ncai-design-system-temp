@@ -11,9 +11,9 @@
 
 ## 고도화 우선순위
 
-### High. CLI는 MVP 수준이며 자동 설정 범위를 더 넓혀야 한다
+### Resolved. CLI doctor 진단 범위를 확장했다
 
-`packages/cli`를 추가해 `setup-mcp`, `install-skill`, `validate`, `doctor` 진입점은 생겼다. 다만 현재는 Cursor 중심의 최소 설정만 생성한다. 실제 외부 사용자 경험을 안정화하려면 프로젝트의 React 버전, 설치된 `@ncai/*` 패키지 버전 정렬, 스타일 import 여부, MCP 연결 여부를 `doctor`가 더 정확히 진단해야 한다.
+`packages/cli`의 `doctor`가 소비자 프로젝트의 React 버전, 필수 `@ncai/*-temp` 패키지 설치 여부, 설치된 디자인 시스템 패키지 버전 정렬, 스타일 import, MCP 설정, Cursor Skill 설치 여부를 진단하도록 보완했다. 이제 외부 사용자는 `npx @ncai/design-system-cli-temp doctor`로 설치 누락과 설정 문제를 바로 확인할 수 있다.
 
 ### High. metadata schema가 아직 타입 계약 수준에 머문다
 
@@ -60,8 +60,7 @@ pnpm smoke:pack
 
 ## 다음 단계 추천
 
-1. `doctor`를 실제 소비자 프로젝트 진단 도구로 강화한다.
-2. metadata를 component별 파일과 schema validation 구조로 분리한다.
-3. 토큰 JSON/schema/deprecated alias 산출물을 추가한다.
-4. `examples/vite-react`를 만들어 npm tarball 설치를 더 실제 환경에 가깝게 검증한다.
-5. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 규칙과 테스트 템플릿을 확정한다.
+1. metadata를 component별 파일과 schema validation 구조로 분리한다.
+2. 토큰 JSON/schema/deprecated alias 산출물을 추가한다.
+3. `examples/vite-react`를 만들어 npm tarball 설치를 더 실제 환경에 가깝게 검증한다.
+4. 컴포넌트 2-3개를 추가하기 전에 컴포넌트 생성 규칙과 테스트 템플릿을 확정한다.

@@ -173,6 +173,21 @@ npx @ncai/design-system-cli-temp validate --file src/App.tsx
 npx @ncai/design-system-cli-temp doctor
 ```
 
+`doctor`는 소비자 프로젝트 루트에서 다음 항목을 진단합니다.
+
+- React 18 이상 설치 여부
+- `@ncai/design-system-temp`, `@ncai/design-tokens-temp` 설치 여부
+- 설치된 `@ncai/*-temp` 디자인 시스템 패키지의 버전 정렬 여부
+- 앱 소스의 `@ncai/design-tokens-temp/styles.css`, `@ncai/design-system-temp/styles.css` import 여부
+- `.cursor/mcp.json`의 MCP 서버 등록 여부
+- `.cursor/skills/ncai-design-system/SKILL.md` 설치 여부
+
+다른 경로의 프로젝트를 검사하려면 `--cwd`를 사용합니다.
+
+```bash
+npx @ncai/design-system-cli-temp doctor --cwd ../my-react-app
+```
+
 ## 디자인 업데이트 흐름
 
 토큰이 바뀌면 `resource/token/figma.scss`를 새 export로 교체한 뒤 `packages/tokens/src/styles.scss`의 alias mapping만 확인합니다. CSS variable 이름이 유지되면 React 컴포넌트와 MCP metadata 변경 없이 빌드 검증만으로 반영할 수 있습니다.
