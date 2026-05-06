@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    [
+      "@ncai/design-system-metadata-temp",
+      "@ncai/design-tokens-temp",
+      "@ncai/design-icons-temp",
+      "@ncai/design-system-temp",
+      "@ncai/design-system-mcp-temp",
+      "@ncai/design-system-skills-temp",
+      "@ncai/design-system-cli-temp"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@ncai/design-system-storybook-temp"]
+}

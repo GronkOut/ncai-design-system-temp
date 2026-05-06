@@ -1,0 +1,349 @@
+@mixin display-56-b() {
+  font-size: 56px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 67px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin display-44-b() {
+  font-size: 44px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 53px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin display-32-b() {
+  font-size: 32px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 38px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin display-28-b() {
+  font-size: 28px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 34px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-24-b() {
+  font-size: 24px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 31px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-24-r() {
+  font-size: 24px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 31px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-20-b() {
+  font-size: 20px;
+  font-family: Pretendard;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 26px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-20-r() {
+  font-size: 20px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 26px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-18-sb() {
+  font-size: 18px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 23px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-18-r() {
+  font-size: 18px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 23px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-16-sb() {
+  font-size: 16px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 21px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-16-r() {
+  font-size: 16px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 21px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-15-sb() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 19px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-15-r() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 19px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-14-sb() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 18px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin title-14-r() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 18px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-16-sb() {
+  font-size: 16px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 24px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-16-r() {
+  font-size: 16px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 24px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-15-sb() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 23px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-15-r() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 23px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-14-sb() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 21px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin body-14-r() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 21px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-13-sb() {
+  font-size: 13px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 17px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-13-r() {
+  font-size: 13px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 17px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-12-sb() {
+  font-size: 12px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-12-r() {
+  font-size: 12px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-11-sb() {
+  font-size: 11px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 14px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin caption-11-r() {
+  font-size: 11px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 14px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-15-sb() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 18px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-15-r() {
+  font-size: 15px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 18px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-14-sb() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 17px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-14-r() {
+  font-size: 14px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 17px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-13-sb() {
+  font-size: 13px;
+  font-family: Pretendard;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-13-r() {
+  font-size: 13px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-10-sb() {
+  font-family: Pretendard;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 13px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin label-10-r() {
+  font-size: 10px;
+  font-family: Pretendard;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 13px;
+  text-decoration: none;
+  text-transform: none;
+}
+@mixin elevation-10() {
+  box-shadow:
+    0px 3px 6px -1px #000000,
+    0px 3px 6px #000000;
+}
+@mixin elevation-20() {
+  box-shadow:
+    0px 4px 8px -1px #000000,
+    0px 6px 8px #000000;
+}
+@mixin elevation-30() {
+  box-shadow:
+    0px 6px 10px -1px #000000,
+    0px 8px 10px #000000;
+}
+@mixin elevation-ambient() {
+  box-shadow:
+    0px 0px 8px -1px #000000,
+    0px 0px 8px #000000;
+}
+@mixin elevation-depth() {
+  box-shadow:
+    0px 2px 4px -1px #000000,
+    0px 14px 28px -6px #000000;
+}

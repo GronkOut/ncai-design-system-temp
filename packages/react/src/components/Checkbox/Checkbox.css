@@ -1,0 +1,87 @@
+.ncai-checkbox__control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--ncai-color-border-muted);
+  border-radius: var(--ncai-radius-checkbox);
+  background: var(--ncai-color-bg-surface);
+  color: transparent;
+  cursor: pointer;
+}
+
+.ncai-checkbox__control[data-shape='circle'] {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--ncai-radius-full);
+}
+
+.ncai-checkbox__control[data-checked],
+.ncai-checkbox__control[data-indeterminate] {
+  border-color: var(--ncai-color-accent-primary);
+  background: var(--ncai-color-accent-primary);
+  color: var(--ncai-color-text-inverse);
+}
+
+.ncai-checkbox__control[data-warning]:not([data-checked]):not([data-indeterminate]) {
+  border-color: var(--ncai-color-border-danger);
+}
+
+.ncai-checkbox__control[data-disabled] {
+  border-color: var(--ncai-color-bg-disabled);
+  background: var(--ncai-color-bg-surface);
+  color: transparent;
+  cursor: not-allowed;
+}
+
+.ncai-checkbox__control[data-disabled][data-checked],
+.ncai-checkbox__control[data-disabled][data-indeterminate] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--ncai-color-accent-primary) 50%, transparent);
+  color: var(--ncai-color-text-inverse);
+}
+
+.ncai-checkbox__indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ncai-checkbox__icon {
+  display: block;
+}
+
+.ncai-checkbox__icon--check {
+  width: 14px;
+  height: 14px;
+}
+
+.ncai-checkbox__icon--partial {
+  width: 16px;
+  height: 16px;
+}
+
+.ncai-checkbox__control[data-shape='circle'] .ncai-checkbox__indicator {
+  width: 24px;
+  height: 24px;
+}
+
+.ncai-checkbox__control[data-shape='circle'] .ncai-checkbox__icon--check {
+  width: 18px;
+  height: 18px;
+}
+
+.ncai-checkbox__control[data-shape='circle'] .ncai-checkbox__icon--partial {
+  width: 20px;
+  height: 20px;
+}

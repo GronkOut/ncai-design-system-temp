@@ -1,0 +1,92 @@
+@use '../../../resource/token/figma' as figma;
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --ncai-font-family-sans: Pretendard, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --ncai-color-bg-canvas: #{figma.$light-fill-background-secondary};
+  --ncai-color-bg-surface: #{figma.$light-fill-surface-secondary};
+  --ncai-color-bg-subtle: #{figma.$light-refine-senary};
+  --ncai-color-bg-disabled: #{figma.$light-interaction-disabled};
+
+  --ncai-color-text-primary: #{figma.$light-label-primary};
+  --ncai-color-text-secondary: #{figma.$light-label-tertiary};
+  --ncai-color-text-placeholder: #{figma.$light-label-quaternary};
+  --ncai-color-text-inverse: #{figma.$light-static-white};
+  --ncai-color-text-danger: #{figma.$light-status-negative};
+
+  --ncai-color-border-default: #{figma.$light-line-secondary};
+  --ncai-color-border-muted: #{figma.$light-refine-quinary};
+  --ncai-color-border-hover: #{figma.$light-line-primary};
+  --ncai-color-border-focus: #{figma.$light-status-positive};
+  --ncai-color-border-danger: #{figma.$light-status-negative};
+
+  --ncai-color-accent-primary: #{figma.$light-static-primary};
+  --ncai-color-accent-primary-hover: #{figma.$light-colors-blue-600};
+  --ncai-color-accent-danger: #{figma.$light-status-negative};
+
+  --ncai-radius-xs: #{figma.$radius-2};
+  --ncai-radius-checkbox: #{figma.$radius-4};
+  --ncai-radius-sm: #{figma.$radius-6};
+  --ncai-radius-md: #{figma.$radius-8};
+  --ncai-radius-full: #{figma.$radius-full};
+
+  --ncai-space-1: 4px;
+  --ncai-space-2: 8px;
+  --ncai-space-3: 12px;
+  --ncai-space-4: 16px;
+  --ncai-space-5: 20px;
+
+  --ncai-font-size-caption: 12px;
+  --ncai-line-height-caption: 16px;
+  --ncai-font-size-label-sm: 13px;
+  --ncai-line-height-label-sm: 18px;
+  --ncai-font-size-label-md: 14px;
+  --ncai-line-height-label-md: 20px;
+  --ncai-font-size-label-lg: 15px;
+  --ncai-line-height-label-lg: 22px;
+
+  --ncai-duration-fast: 120ms;
+  --ncai-duration-normal: 180ms;
+  --ncai-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --ncai-color-bg-canvas: #{figma.$dark-fill-background-secondary};
+  --ncai-color-bg-surface: #{figma.$dark-fill-surface-secondary};
+  --ncai-color-bg-subtle: #{figma.$dark-refine-senary};
+  --ncai-color-bg-disabled: #{figma.$dark-interaction-disabled};
+
+  --ncai-color-text-primary: #{figma.$dark-label-primary};
+  --ncai-color-text-secondary: #{figma.$dark-label-tertiary};
+  --ncai-color-text-placeholder: #{figma.$dark-label-quaternary};
+  --ncai-color-text-inverse: #{figma.$dark-static-white};
+  --ncai-color-text-danger: #{figma.$dark-status-negative};
+
+  --ncai-color-border-default: #{figma.$dark-line-secondary};
+  --ncai-color-border-muted: #{figma.$dark-refine-quinary};
+  --ncai-color-border-hover: #{figma.$dark-line-primary};
+  --ncai-color-border-focus: #{figma.$dark-status-positive};
+  --ncai-color-border-danger: #{figma.$dark-status-negative};
+
+  --ncai-color-accent-primary: #{figma.$dark-static-primary};
+  --ncai-color-accent-primary-hover: #{figma.$dark-colors-blue-700};
+  --ncai-color-accent-danger: #{figma.$dark-status-negative};
+}
+
+html,
+body {
+  font-family: var(--ncai-font-family-sans);
+}
+
+body {
+  margin: 0;
+  background: var(--ncai-color-bg-canvas);
+  color: var(--ncai-color-text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}

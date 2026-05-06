@@ -1,0 +1,22 @@
+import type { IconProps } from './types';
+
+export function PartialIcon({ title, ...props }: IconProps) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden={title ? undefined : true}
+      role={title ? 'img' : undefined}
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <path
+        d="M17.5 11.2002L17.582 11.2041C17.9853 11.2452 18.2998 11.5859 18.2998 12C18.2998 12.4141 17.9853 12.7548 17.582 12.7959L17.5 12.7998H6.5C6.05817 12.7998 5.7002 12.4418 5.7002 12C5.7002 11.5582 6.05817 11.2002 6.5 11.2002H17.5Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

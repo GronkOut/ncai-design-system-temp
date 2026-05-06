@@ -1,0 +1,58 @@
+{
+  "name": "@ncai/design-system-temp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./metadata": {
+      "types": "./dist/metadata.d.ts",
+      "default": "./dist/metadata.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GronkOut/ncai-design-system-temp.git",
+    "directory": "packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/GronkOut/ncai-design-system-temp/issues"
+  },
+  "homepage": "https://github.com/GronkOut/ncai-design-system-temp#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/metadata.ts --format esm --dts --out-dir dist --clean --external react --external react-dom --external @base-ui/react --external @ncai/design-system-metadata-temp && node scripts/build-styles.mjs",
+    "lint": "tsc --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ncai/design-icons-temp": "workspace:*",
+    "@ncai/design-system-metadata-temp": "workspace:*",
+    "@ncai/design-tokens-temp": "workspace:*"
+  },
+  "peerDependencies": {
+    "@base-ui/react": ">=1",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  }
+}

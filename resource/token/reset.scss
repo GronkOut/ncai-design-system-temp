@@ -1,0 +1,97 @@
+@use './mixin.scss' as *;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  position: relative;
+  height: 100%;
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
+
+%focus-outline {
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid #006eff;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  @extend %focus-outline;
+}
+
+button {
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+  vertical-align: top;
+  cursor: pointer;
+  @extend %focus-outline;
+
+  &[disabled] {
+    cursor: default;
+  }
+}
+
+input,
+textarea {
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
+
+[popover] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  border: 0;
+  clip: rect(0 0 0 0);
+}

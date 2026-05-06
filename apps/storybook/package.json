@@ -1,0 +1,31 @@
+{
+  "name": "@ncai/design-system-storybook-temp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "storybook build",
+    "dev": "storybook dev -p 6006",
+    "lint": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@ncai/design-icons-temp": "workspace:*",
+    "@ncai/design-system-temp": "workspace:*",
+    "@ncai/design-tokens-temp": "workspace:*",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.3.6",
+    "@storybook/addon-docs": "^10.3.6",
+    "@storybook/react-vite": "^10.3.6",
+    "@vitejs/plugin-react": "^6.0.1",
+    "sass": "^1.99.0",
+    "storybook": "^10.3.6",
+    "vite": "^8.0.10"
+  }
+}

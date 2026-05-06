@@ -1,0 +1,36 @@
+{
+  "name": "@ncai/design-system-cli-temp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ncai-design-system-cli-temp": "./dist/index.js",
+    "ncai-ds-temp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GronkOut/ncai-design-system-temp.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/GronkOut/ncai-design-system-temp/issues"
+  },
+  "homepage": "https://github.com/GronkOut/ncai-design-system-temp#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --out-dir dist --clean",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ncai/design-system-metadata-temp": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0"
+  }
+}

@@ -1,0 +1,52 @@
+.sb-show-main {
+  background: var(--ncai-color-bg-canvas);
+}
+
+.docs-story {
+  background: var(--ncai-color-bg-canvas);
+}
+
+.story-surface {
+  display: grid;
+  max-width: 560px;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid var(--ncai-color-border-default);
+  border-radius: var(--ncai-radius-md);
+  background: var(--ncai-color-bg-surface);
+}
+
+.story-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.story-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.checkbox-state-section {
+  display: grid;
+  width: max-content;
+  gap: 12px;
+}
+
+.checkbox-state-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.checkbox-state-row {
+  display: grid;
+  grid-template-columns: 24px auto;
+  align-items: center;
+  gap: 12px;
+  color: var(--ncai-color-text-primary);
+  font-family: var(--ncai-font-family-sans);
+  font-size: var(--ncai-font-size-label-md);
+  line-height: var(--ncai-line-height-label-md);
+}
