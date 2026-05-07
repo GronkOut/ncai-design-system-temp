@@ -120,8 +120,8 @@ try {
   if (error.status !== 1) throw error;
 }
 
-run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'setup-mcp'], consumerDir);
-run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'install-skill'], consumerDir);
+run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'setup-mcp', '--agent', 'cursor'], consumerDir);
+run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'install-skill', '--agent', 'cursor'], consumerDir);
 
 const mcpConfig = JSON.parse(await readFile(resolve(consumerDir, '.cursor/mcp.json'), 'utf8'));
 if (!mcpConfig.mcpServers?.['ncai-design-system-temp']?.args?.includes('@ncai/design-system-mcp-temp')) {
@@ -216,9 +216,33 @@ run('npm', ['install', `file:${resolve(tarballDir, packages.find((item) => item.
 
 await writeFile(resolve(npmConsumerDir, 'App.tsx'), "import '@ncai/design-system-temp/styles.css';\nimport { Checkbox } from '@ncai/design-system-temp';\n<Checkbox aria-label=\"npm 설치 확인\" />;\n");
 run('npx', ['ncai-design-system-cli-temp', 'doctor'], npmConsumerDir);
-run('npx', ['ncai-design-system-cli-temp', 'setup-mcp'], npmConsumerDir);
-run('npx', ['ncai-design-system-cli-temp', 'install-skill'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'setup-mcp', '--agent', 'cursor'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'install-skill', '--agent', 'cursor'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'setup-mcp', '--agent', 'vscode'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'install-skill', '--agent', 'vscode'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'setup-mcp', '--agent', 'jetbrains'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'install-skill', '--agent', 'jetbrains'], npmConsumerDir);
 run('npx', ['ncai-design-system-cli-temp', 'validate', '--file', 'App.tsx'], npmConsumerDir);
+
+const vscodeMcpConfig = JSON.parse(await readFile(resolve(npmConsumerDir, '.vscode/mcp.json'), 'utf8'));
+if (vscodeMcpConfig.servers?.['ncai-design-system-temp']?.type !== 'stdio') {
+  throw new Error('setup-mcp --agent vscode did not create the expected VS Code MCP config');
+}
+
+const jetbrainsMcpConfig = JSON.parse(await readFile(resolve(npmConsumerDir, '.ncai/jetbrains-mcp.json'), 'utf8'));
+if (!jetbrainsMcpConfig.mcpServers?.['ncai-design-system-temp']?.args?.includes('@ncai/design-system-mcp-temp')) {
+  throw new Error('setup-mcp --agent jetbrains did not create the expected JetBrains MCP snippet');
+}
+
+const copilotInstructions = await readFile(resolve(npmConsumerDir, '.github/copilot-instructions.md'), 'utf8');
+if (!copilotInstructions.includes('@ncai/design-system-temp')) {
+  throw new Error('install-skill --agent vscode did not create useful Copilot instructions');
+}
+
+const jetbrainsInstructions = await readFile(resolve(npmConsumerDir, '.ncai/jetbrains-agent-instructions.md'), 'utf8');
+if (!jetbrainsInstructions.includes('@ncai/design-system-temp')) {
+  throw new Error('install-skill --agent jetbrains did not create useful agent instructions');
+}
 
 await cp(exampleSourceDir, exampleConsumerDir, {
   recursive: true,

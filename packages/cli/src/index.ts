@@ -3,6 +3,8 @@ import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
+import { createInterface } from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
 import { componentMetadata, validateUiCode } from '@ncai/design-system-metadata-temp';
 
 type Command = 'setup-mcp' | 'install-skill' | 'validate' | 'doctor' | 'help';
@@ -17,8 +19,12 @@ const iconPackage = '@ncai/design-icons-temp';
 const mcpPackage = '@ncai/design-system-mcp-temp';
 const skillsPackage = '@ncai/design-system-skills-temp';
 const cliPackage = '@ncai/design-system-cli-temp';
+const mcpServerName = 'ncai-design-system-temp';
 
 const ncaiPackages = [runtimePackage, tokenPackage, iconPackage, mcpPackage, skillsPackage, cliPackage] as const;
+const agentChoices = ['cursor', 'vscode', 'jetbrains', 'manual'] as const;
+
+type AgentChoice = (typeof agentChoices)[number];
 
 type PackageJson = {
   dependencies?: Record<string, string>;
@@ -45,8 +51,58 @@ function normalizeCommand(value: string | undefined): Command {
 }
 
 function optionValue(name: string) {
+  const inline = args.find((arg) => arg.startsWith(`${name}=`));
+  if (inline) return inline.slice(name.length + 1);
   const index = args.indexOf(name);
   return index >= 0 ? args[index + 1] : undefined;
+}
+
+function normalizeAgent(value: string | undefined): AgentChoice | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (normalized === 'vs-code' || normalized === 'visual-studio-code') return 'vscode';
+  if (normalized === 'intellij' || normalized === 'idea' || normalized === 'jetbrains-ai') return 'jetbrains';
+  return agentChoices.includes(normalized as AgentChoice) ? (normalized as AgentChoice) : undefined;
+}
+
+async function selectAgent(action: 'MCP 설정' | 'Agent Skill 설치'): Promise<AgentChoice | undefined> {
+  const requested = optionValue('--agent') ?? optionValue('--ide');
+  const agent = normalizeAgent(requested);
+
+  if (agent) return agent;
+  if (requested) {
+    console.error(`지원하지 않는 에이전트입니다: ${requested}`);
+    console.error(`지원 값: ${agentChoices.join(', ')}`);
+    process.exitCode = 1;
+    return undefined;
+  }
+
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    console.error(`${action} 대상 에이전트를 명시하세요.`);
+    console.error(`예: npx ${cliPackage} ${action === 'MCP 설정' ? 'setup-mcp' : 'install-skill'} --agent cursor`);
+    console.error(`지원 값: ${agentChoices.join(', ')}`);
+    process.exitCode = 1;
+    return undefined;
+  }
+
+  const rl = createInterface({ input, output });
+  try {
+    console.log(`${action}에 사용할 에이전트를 선택하세요.`);
+    console.log('1) Cursor');
+    console.log('2) VS Code / GitHub Copilot');
+    console.log('3) JetBrains AI Assistant / IntelliJ');
+    console.log('4) Manual / 기타');
+    const answer = (await rl.question('번호 또는 이름 입력: ')).trim().toLowerCase();
+    const agent = normalizeAgent(answer) ?? ({ '1': 'cursor', '2': 'vscode', '3': 'jetbrains', '4': 'manual' } as Record<string, AgentChoice>)[answer];
+    if (!agent) {
+      console.error(`지원하지 않는 에이전트입니다: ${answer || '(empty)'}`);
+      console.error(`지원 값: ${agentChoices.join(', ')}`);
+      process.exitCode = 1;
+    }
+    return agent;
+  } finally {
+    rl.close();
+  }
 }
 
 async function pathExists(path: string) {
@@ -71,36 +127,125 @@ async function writeJson(path: string, data: unknown) {
   await writeFile(path, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
 }
 
-async function setupMcp() {
-  const target = resolve(optionValue('--target') ?? '.cursor/mcp.json');
-  const existing = (await pathExists(target)) ? JSON.parse(await readFile(target, 'utf8')) : {};
+function ncaiMcpServerConfig() {
+  return {
+    command: 'npx',
+    args: ['-y', mcpPackage]
+  };
+}
 
-  const next = {
-    ...existing,
+function ncaiMcpSnippet() {
+  return {
     mcpServers: {
-      ...(existing.mcpServers ?? {}),
-      'ncai-design-system-temp': {
-        command: 'npx',
-        args: ['-y', '@ncai/design-system-mcp-temp']
-      }
+      [mcpServerName]: ncaiMcpServerConfig()
     }
   };
+}
 
-  await writeJson(target, next);
-  console.log(`NC AI MCP 설정을 작성했습니다: ${target}`);
+async function writeMarkdown(path: string, content: string) {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, content.endsWith('\n') ? content : `${content}\n`, 'utf8');
+}
+
+function agentInstructions() {
+  return `# NC AI Design System Agent Instructions
+
+- Use ${runtimePackage} for approved React components.
+- Import ${runtimePackage}/styles.css once in the app entry.
+- Do not import Base UI directly from app code.
+- Prefer approved NC AI tokens and icons exposed by ${tokenPackage}, ${iconPackage}, and ${runtimePackage}.
+- When MCP is available, query ${mcpServerName} before adding or changing design system UI.
+- Validate UI code with: npx ${cliPackage} validate --file <path>
+`;
+}
+
+async function setupMcp() {
+  const agent = await selectAgent('MCP 설정');
+  if (!agent) return;
+
+  if (agent === 'cursor') {
+    const target = resolve(optionValue('--target') ?? '.cursor/mcp.json');
+    const existing = (await pathExists(target)) ? JSON.parse(await readFile(target, 'utf8')) : {};
+    const next = {
+      ...existing,
+      mcpServers: {
+        ...(existing.mcpServers ?? {}),
+        [mcpServerName]: ncaiMcpServerConfig()
+      }
+    };
+
+    await writeJson(target, next);
+    console.log(`NC AI MCP 설정을 작성했습니다: ${target}`);
+    return;
+  }
+
+  if (agent === 'vscode') {
+    const target = resolve(optionValue('--target') ?? '.vscode/mcp.json');
+    const existing = (await pathExists(target)) ? JSON.parse(await readFile(target, 'utf8')) : {};
+    const next = {
+      ...existing,
+      servers: {
+        ...(existing.servers ?? {}),
+        [mcpServerName]: {
+          type: 'stdio',
+          ...ncaiMcpServerConfig()
+        }
+      }
+    };
+
+    await writeJson(target, next);
+    console.log(`NC AI MCP 설정을 작성했습니다: ${target}`);
+    return;
+  }
+
+  if (agent === 'jetbrains') {
+    const target = resolve(optionValue('--target') ?? '.ncai/jetbrains-mcp.json');
+    await writeJson(target, ncaiMcpSnippet());
+    console.log(`JetBrains AI Assistant에서 가져다 쓸 MCP 설정을 작성했습니다: ${target}`);
+    console.log('IntelliJ Settings | Tools | AI Assistant | Model Context Protocol (MCP)에서 이 JSON 내용을 추가하세요.');
+    return;
+  }
+
+  console.log('아래 MCP 설정을 사용 중인 에이전트의 MCP 설정 화면이나 파일에 추가하세요.');
+  console.log(JSON.stringify(ncaiMcpSnippet(), null, 2));
 }
 
 async function installSkill() {
-  const target =
-    optionValue('--target') === 'cursor-user'
-      ? join(homedir(), '.cursor', 'skills', 'ncai-design-system')
-      : resolve(optionValue('--path') ?? '.cursor/skills/ncai-design-system');
+  const agent = await selectAgent('Agent Skill 설치');
+  if (!agent) return;
+
   const skillSource = require.resolve(`${skillsPackage}/company-ui/SKILL.md`);
   const skill = await readFile(skillSource, 'utf8');
 
-  await mkdir(target, { recursive: true });
-  await writeFile(join(target, 'SKILL.md'), skill, 'utf8');
-  console.log(`NC AI Skill을 설치했습니다: ${target}`);
+  if (agent === 'cursor') {
+    const target =
+      optionValue('--target') === 'cursor-user'
+        ? join(homedir(), '.cursor', 'skills', 'ncai-design-system')
+        : resolve(optionValue('--path') ?? '.cursor/skills/ncai-design-system');
+
+    await mkdir(target, { recursive: true });
+    await writeFile(join(target, 'SKILL.md'), skill, 'utf8');
+    console.log(`NC AI Skill을 설치했습니다: ${target}`);
+    return;
+  }
+
+  if (agent === 'vscode') {
+    const target = resolve(optionValue('--path') ?? '.github/copilot-instructions.md');
+    await writeMarkdown(target, agentInstructions());
+    console.log(`VS Code/GitHub Copilot용 지침을 작성했습니다: ${target}`);
+    return;
+  }
+
+  if (agent === 'jetbrains') {
+    const target = resolve(optionValue('--path') ?? '.ncai/jetbrains-agent-instructions.md');
+    await writeMarkdown(target, `${agentInstructions()}\n\n---\n\n${skill}`);
+    console.log(`JetBrains AI Assistant에 붙여넣을 지침을 작성했습니다: ${target}`);
+    return;
+  }
+
+  const target = resolve(optionValue('--path') ?? '.ncai/agent-instructions.md');
+  await writeMarkdown(target, `${agentInstructions()}\n\n---\n\n${skill}`);
+  console.log(`에이전트 공통 지침을 작성했습니다: ${target}`);
 }
 
 async function validate() {
@@ -247,9 +392,117 @@ async function diagnoseStyles(projectRoot: string): Promise<Diagnostic[]> {
 }
 
 async function diagnoseMcp(projectRoot: string): Promise<Diagnostic[]> {
+  const requested = optionValue('--agent') ?? optionValue('--ide');
+  const agent = normalizeAgent(requested);
+  if (requested && !agent) {
+    return [
+      {
+        status: 'fail',
+        label: 'Agent 설정',
+        detail: `지원하지 않는 에이전트입니다: ${requested}`,
+        fix: `지원 값: ${agentChoices.join(', ')}`
+      }
+    ];
+  }
+
+  if (!agent) {
+    return [
+      {
+        status: 'pass',
+        label: 'Agent 설정',
+        detail: `에이전트별 MCP/Skill 진단은 선택 사항입니다. 필요하면 doctor --agent ${agentChoices.join('|')}를 사용하세요.`
+      }
+    ];
+  }
+
+  if (agent === 'vscode') {
+    const mcpConfigPath = join(projectRoot, '.vscode', 'mcp.json');
+    const mcpConfig = await readJson<{ servers?: Record<string, { command?: string; args?: string[] }> }>(mcpConfigPath);
+    const server = mcpConfig?.servers?.[mcpServerName];
+    const hasMcpPackage = server?.args?.some((arg) => arg.includes(mcpPackage));
+    const instructionPath = join(projectRoot, '.github', 'copilot-instructions.md');
+
+    return [
+      server && hasMcpPackage
+        ? {
+            status: 'pass',
+            label: 'VS Code MCP 설정',
+            detail: `${mcpConfigPath}에 ${mcpServerName} 서버가 등록되어 있습니다.`
+          }
+        : {
+            status: 'warn',
+            label: 'VS Code MCP 설정',
+            detail: 'VS Code MCP 설정을 찾지 못했거나 MCP 패키지명이 다릅니다.',
+            fix: `npx ${cliPackage} setup-mcp --agent vscode`
+          },
+      (await pathExists(instructionPath))
+        ? {
+            status: 'pass',
+            label: 'VS Code Copilot 지침',
+            detail: `발견됨: ${instructionPath}`
+          }
+        : {
+            status: 'warn',
+            label: 'VS Code Copilot 지침',
+            detail: '프로젝트 Copilot 지침을 찾지 못했습니다.',
+            fix: `npx ${cliPackage} install-skill --agent vscode`
+          }
+    ];
+  }
+
+  if (agent === 'jetbrains') {
+    const mcpSnippetPath = join(projectRoot, '.ncai', 'jetbrains-mcp.json');
+    const instructionPath = join(projectRoot, '.ncai', 'jetbrains-agent-instructions.md');
+
+    return [
+      (await pathExists(mcpSnippetPath))
+        ? {
+            status: 'pass',
+            label: 'JetBrains MCP 설정 스니펫',
+            detail: `발견됨: ${mcpSnippetPath}`
+          }
+        : {
+            status: 'warn',
+            label: 'JetBrains MCP 설정 스니펫',
+            detail: 'JetBrains AI Assistant에 추가할 MCP JSON 스니펫을 찾지 못했습니다.',
+            fix: `npx ${cliPackage} setup-mcp --agent jetbrains`
+          },
+      (await pathExists(instructionPath))
+        ? {
+            status: 'pass',
+            label: 'JetBrains 에이전트 지침',
+            detail: `발견됨: ${instructionPath}`
+          }
+        : {
+            status: 'warn',
+            label: 'JetBrains 에이전트 지침',
+            detail: 'JetBrains AI Assistant에 붙여넣을 지침 파일을 찾지 못했습니다.',
+            fix: `npx ${cliPackage} install-skill --agent jetbrains`
+          }
+    ];
+  }
+
+  if (agent === 'manual') {
+    const instructionPath = join(projectRoot, '.ncai', 'agent-instructions.md');
+    return [
+      (await pathExists(instructionPath))
+        ? {
+            status: 'pass',
+            label: '공통 에이전트 지침',
+            detail: `발견됨: ${instructionPath}`
+          }
+        : {
+            status: 'warn',
+            label: '공통 에이전트 지침',
+            detail: '기타 에이전트에 붙여넣을 공통 지침 파일을 찾지 못했습니다.',
+            fix: `npx ${cliPackage} install-skill --agent manual`
+          }
+    ];
+  }
+
   const mcpConfigPath = join(projectRoot, '.cursor', 'mcp.json');
   const mcpConfig = await readJson<{ mcpServers?: Record<string, { command?: string; args?: string[] }> }>(mcpConfigPath);
-  const server = mcpConfig?.mcpServers?.['ncai-design-system-temp'];
+  const server = mcpConfig?.mcpServers?.[mcpServerName];
   const hasMcpPackage = server?.args?.some((arg) => arg.includes(mcpPackage));
 
   const skillPath = join(projectRoot, '.cursor', 'skills', 'ncai-design-system', 'SKILL.md');
@@ -258,14 +511,14 @@ async function diagnoseMcp(projectRoot: string): Promise<Diagnostic[]> {
     server && hasMcpPackage
       ? {
           status: 'pass',
-          label: 'MCP 설정',
-          detail: `${mcpConfigPath}에 ncai-design-system-temp 서버가 등록되어 있습니다.`
+          label: 'Cursor MCP 설정',
+          detail: `${mcpConfigPath}에 ${mcpServerName} 서버가 등록되어 있습니다.`
         }
       : {
           status: 'warn',
-          label: 'MCP 설정',
-          detail: '프로젝트 MCP 설정을 찾지 못했거나 MCP 패키지명이 다릅니다.',
-          fix: `npx ${cliPackage} setup-mcp`
+          label: 'Cursor MCP 설정',
+          detail: 'Cursor MCP 설정을 찾지 못했거나 MCP 패키지명이 다릅니다.',
+          fix: `npx ${cliPackage} setup-mcp --agent cursor`
         },
     (await pathExists(skillPath))
       ? {
@@ -277,7 +530,7 @@ async function diagnoseMcp(projectRoot: string): Promise<Diagnostic[]> {
           status: 'warn',
           label: 'Cursor Skill',
           detail: '프로젝트 Skill 설치를 찾지 못했습니다.',
-          fix: `npx ${cliPackage} install-skill`
+          fix: `npx ${cliPackage} install-skill --agent cursor`
         }
   ];
 }
@@ -404,10 +657,16 @@ function help() {
   console.log(`NC AI Design System CLI
 
 Commands:
-  setup-mcp                    .cursor/mcp.json에 MCP 서버 설정을 추가합니다.
-  install-skill                .cursor/skills/ncai-design-system에 Skill을 설치합니다.
+  setup-mcp --agent <agent>     선택한 에이전트의 MCP 설정을 추가하거나 안내 파일을 만듭니다.
+  install-skill --agent <agent> 선택한 에이전트의 지침/Skill을 설치합니다.
   validate --file <path>       코드 파일의 기본 디자인 시스템 위반을 검사합니다.
-  doctor                       설치, 버전, 스타일 import, MCP 설정을 진단합니다.
+  doctor [--agent <agent>]     설치, 버전, 스타일 import, 선택한 에이전트 설정을 진단합니다.
+
+Agents:
+  cursor                       .cursor/mcp.json과 Cursor Skill을 설정합니다.
+  vscode                       .vscode/mcp.json과 GitHub Copilot 지침을 설정합니다.
+  jetbrains                    JetBrains AI Assistant에 붙여넣을 MCP/지침 파일을 만듭니다.
+  manual                       기타 에이전트용 MCP JSON과 공통 지침을 출력/생성합니다.
 
 Aliases:
   mcp init                     setup-mcp와 같습니다.

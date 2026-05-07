@@ -26,7 +26,7 @@ NC AI 디자인 시스템의 React MVP 저장소입니다. Base UI는 내부 접
   - [구현 위치](#구현-위치)
 - [MCP와 Agent Skill 설정](#mcp와-agent-skill-설정)
   - [MCP 실행 방식](#mcp-실행-방식)
-  - [Cursor 프로젝트 설정](#cursor-프로젝트-설정)
+  - [에이전트 선택](#에이전트-선택)
   - [Agent Skill 설치](#agent-skill-설치)
   - [MCP 수동 실행](#mcp-수동-실행)
   - [MCP 제공 도구](#mcp-제공-도구)
@@ -228,11 +228,11 @@ export function AgreementField() {
 
 ### MCP 실행 방식
 
-MCP는 에이전트가 디자인 시스템 정보를 물어볼 수 있는 작은 로컬 서버입니다. 여기서 "서버"는 보통 웹 서버처럼 배포해 두는 HTTP 서버가 아니라, Cursor가 필요할 때 실행하는 stdio 프로세스입니다.
+MCP는 에이전트가 디자인 시스템 정보를 물어볼 수 있는 작은 로컬 서버입니다. 여기서 "서버"는 보통 웹 서버처럼 배포해 두는 HTTP 서버가 아니라, IDE나 에이전트가 필요할 때 실행하는 stdio 프로세스입니다.
 
-기본 사용자는 이 저장소를 직접 clone하지 않아도 됩니다. npm에 배포된 MCP 패키지를 `npx`로 실행하도록 Cursor 설정만 추가하면 됩니다.
+기본 사용자는 이 저장소를 직접 clone하지 않아도 됩니다. npm에 배포된 MCP 패키지를 `npx`로 실행하도록 사용하는 에이전트의 MCP 설정에 추가하면 됩니다.
 
-### Cursor 프로젝트 설정
+### 에이전트 선택
 
 에이전트가 디자인 시스템 규칙을 조회하고 코드를 검증해야 한다면 사용자 프로젝트에 CLI를 개발 의존성으로 설치합니다.
 
@@ -240,13 +240,23 @@ MCP는 에이전트가 디자인 시스템 정보를 물어볼 수 있는 작은
 npm install -D @ncai/design-system-cli-temp
 ```
 
-그다음 Cursor 프로젝트에 기본 MCP 설정을 추가합니다.
+그다음 사용하는 에이전트를 선택해 MCP 설정을 추가합니다. 옵션을 생략하면 터미널에서 선택 질문을 표시합니다.
 
 ```bash
-npx @ncai/design-system-cli-temp setup-mcp
+npx @ncai/design-system-cli-temp setup-mcp --agent cursor
+npx @ncai/design-system-cli-temp setup-mcp --agent vscode
+npx @ncai/design-system-cli-temp setup-mcp --agent jetbrains
+npx @ncai/design-system-cli-temp setup-mcp --agent manual
 ```
 
-이 명령은 기본적으로 `.cursor/mcp.json`에 다음 형태의 서버 설정을 병합합니다.
+지원하는 agent 값은 다음과 같습니다.
+
+- `cursor`: `.cursor/mcp.json`에 Cursor MCP 설정을 병합합니다.
+- `vscode`: `.vscode/mcp.json`에 VS Code/GitHub Copilot MCP 설정을 병합합니다.
+- `jetbrains`: IntelliJ/JetBrains AI Assistant 설정 화면에 붙여넣을 `.ncai/jetbrains-mcp.json` 파일을 만듭니다.
+- `manual`: 기타 에이전트에서 쓸 MCP JSON을 터미널에 출력합니다.
+
+Cursor와 JetBrains 계열은 다음 형태의 MCP 서버 설정을 사용합니다.
 
 ```json
 {
@@ -259,21 +269,40 @@ npx @ncai/design-system-cli-temp setup-mcp
 }
 ```
 
-이 설정의 의미는 "Cursor가 `ncai-design-system-temp` MCP를 사용할 때 `npx -y @ncai/design-system-mcp-temp`를 실행한다"입니다. 처음 실행할 때는 npm registry에서 패키지를 받아 로컬에서 실행하고, 이후에는 npm/npx 캐시 정책에 따라 재사용됩니다.
+VS Code는 `.vscode/mcp.json`에서 `servers` 키를 사용합니다.
+
+```json
+{
+  "servers": {
+    "ncai-design-system-temp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@ncai/design-system-mcp-temp"]
+    }
+  }
+}
+```
+
+이 설정의 의미는 "에이전트가 `ncai-design-system-temp` MCP를 사용할 때 `npx -y @ncai/design-system-mcp-temp`를 실행한다"입니다. 처음 실행할 때는 npm registry에서 패키지를 받아 로컬에서 실행하고, 이후에는 npm/npx 캐시 정책에 따라 재사용됩니다.
 
 ### Agent Skill 설치
 
-Cursor Skill도 함께 설치하면 에이전트가 MCP를 언제 조회하고 어떤 규칙을 따라야 하는지 더 잘 알 수 있습니다.
+Agent Skill이나 에이전트 지침도 함께 설치하면 에이전트가 MCP를 언제 조회하고 어떤 규칙을 따라야 하는지 더 잘 알 수 있습니다.
 
 ```bash
-npx @ncai/design-system-cli-temp install-skill
+npx @ncai/design-system-cli-temp install-skill --agent cursor
+npx @ncai/design-system-cli-temp install-skill --agent vscode
+npx @ncai/design-system-cli-temp install-skill --agent jetbrains
+npx @ncai/design-system-cli-temp install-skill --agent manual
 ```
 
-개인 Cursor 환경에 설치하려면 `--target cursor-user`를 사용합니다.
+Cursor는 실제 Skill 파일을 설치합니다. 개인 Cursor 환경에 설치하려면 `--target cursor-user`를 사용합니다.
 
 ```bash
-npx @ncai/design-system-cli-temp install-skill --target cursor-user
+npx @ncai/design-system-cli-temp install-skill --agent cursor --target cursor-user
 ```
+
+VS Code는 `.github/copilot-instructions.md`를 만들고, JetBrains와 기타 에이전트는 `.ncai/` 아래에 붙여넣기용 지침 파일을 만듭니다. 각 에이전트가 자체 Skill 포맷을 제공하지 않는 경우에는 이 지침 파일 내용을 해당 에이전트의 custom instructions에 등록합니다.
 
 ### MCP 수동 실행
 

@@ -1,9 +1,11 @@
 {
   "name": "@ncai/design-system-skills-temp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "type": "module",
-  "files": ["company-ui"],
+  "files": [
+    "company-ui"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GronkOut/ncai-design-system-temp.git",
