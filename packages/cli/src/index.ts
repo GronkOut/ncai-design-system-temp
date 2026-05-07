@@ -2,12 +2,14 @@
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { componentMetadata } from '@ncai/design-system-metadata-temp';
+import { createRequire } from 'node:module';
+import { componentMetadata, validateUiCode } from '@ncai/design-system-metadata-temp';
 
 type Command = 'setup-mcp' | 'install-skill' | 'validate' | 'doctor' | 'help';
 
 const args = process.argv.slice(2);
 const command = normalizeCommand(args[0]);
+const require = createRequire(import.meta.url);
 
 const runtimePackage = '@ncai/design-system-temp';
 const tokenPackage = '@ncai/design-tokens-temp';
@@ -93,21 +95,8 @@ async function installSkill() {
     optionValue('--target') === 'cursor-user'
       ? join(homedir(), '.cursor', 'skills', 'ncai-design-system')
       : resolve(optionValue('--path') ?? '.cursor/skills/ncai-design-system');
-
-  const skill = `---
-name: ncai-design-system
-description: Builds and reviews React UI with NC AI Design System temp packages, Base UI-backed components, approved design tokens, approved icons, MCP component metadata, and UI validation.
----
-
-# NC AI Design System
-
-1. UI를 만들기 전에 MCP \`search_components\`, \`get_component_recipe\`, \`get_component_usage\`로 승인된 컴포넌트를 확인한다.
-2. 앱 코드에서 \`@base-ui/react\`를 직접 import하지 않는다. 공개 컴포넌트는 \`@ncai/design-system-temp\`에서 import한다.
-3. 색상, spacing, radius, typography, shadow는 승인된 \`--ncai-*\` 토큰만 사용한다.
-4. 아이콘은 \`@ncai/design-icons-temp\`의 승인된 아이콘만 사용한다.
-5. 현재 MVP 컴포넌트는 \`Checkbox\`뿐이다. 없는 컴포넌트를 새로 꾸며 만들지 말고 사용자에게 범위 확장을 확인한다.
-6. 작업 후 MCP \`validate_ui_code\` 또는 \`npx @ncai/design-system-cli-temp validate\`로 결과를 확인한다.
-`;
+  const skillSource = require.resolve(`${skillsPackage}/company-ui/SKILL.md`);
+  const skill = await readFile(skillSource, 'utf8');
 
   await mkdir(target, { recursive: true });
   await writeFile(join(target, 'SKILL.md'), skill, 'utf8');
@@ -123,14 +112,13 @@ async function validate() {
   }
 
   const code = await readFile(resolve(file), 'utf8');
-  const findings = [
-    /@base-ui\/react/.test(code) && '앱 코드에서 @base-ui/react 직접 import를 발견했습니다.',
-    /#(?:[0-9a-fA-F]{3,8})\b|rgb\(|hsl\(/.test(code) && '임의 색상값을 발견했습니다.',
-    /lucide-react|react-icons|@heroicons/.test(code) && '미승인 아이콘 라이브러리 import를 발견했습니다.'
-  ].filter(Boolean);
+  const result = validateUiCode(code);
 
-  if (findings.length > 0) {
-    console.error(findings.join('\n'));
+  if (!result.valid) {
+    for (const finding of result.findings) {
+      console.error(`[${finding.severity}] ${finding.message}`);
+    }
+    console.error(result.disclaimer);
     process.exitCode = 1;
     return;
   }
@@ -237,37 +225,21 @@ async function fileContainsAny(paths: string[], patterns: RegExp[]) {
 
 async function diagnoseStyles(projectRoot: string): Promise<Diagnostic[]> {
   const sourceFiles = await collectSourceFiles(projectRoot);
-  const tokenImport = await fileContainsAny(sourceFiles, [
-    /@ncai\/design-tokens-temp\/styles\.css/,
-    /@import\s+['"]@ncai\/design-tokens-temp\/styles\.css['"]/
-  ]);
   const componentImport = await fileContainsAny(sourceFiles, [
     /@ncai\/design-system-temp\/styles\.css/,
     /@import\s+['"]@ncai\/design-system-temp\/styles\.css['"]/
   ]);
 
   return [
-    tokenImport
-      ? {
-          status: 'pass',
-          label: '토큰 스타일 import',
-          detail: `발견됨: ${tokenImport}`
-        }
-      : {
-          status: 'warn',
-          label: '토큰 스타일 import',
-          detail: `${tokenPackage}/styles.css import를 찾지 못했습니다.`,
-          fix: `앱 entry에 import '${tokenPackage}/styles.css'; 를 추가하세요.`
-        },
     componentImport
       ? {
           status: 'pass',
-          label: '컴포넌트 스타일 import',
-          detail: `발견됨: ${componentImport}`
+          label: '디자인 시스템 스타일 import',
+          detail: `발견됨: ${componentImport}. 이 스타일은 ${tokenPackage}/styles.css를 포함합니다.`
         }
       : {
           status: 'warn',
-          label: '컴포넌트 스타일 import',
+          label: '디자인 시스템 스타일 import',
           detail: `${runtimePackage}/styles.css import를 찾지 못했습니다.`,
           fix: `앱 entry에 import '${runtimePackage}/styles.css'; 를 추가하세요.`
         }

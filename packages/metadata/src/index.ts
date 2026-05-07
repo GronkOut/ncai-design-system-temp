@@ -12,6 +12,8 @@ export type {
 } from './schema';
 export { approvedTokens } from './tokens';
 export type { ApprovedToken } from './tokens';
+export { validateUiCode } from './validation';
+export type { UiValidationFinding } from './validation';
 
 import { checkboxMetadata } from './components/Checkbox.metadata';
 

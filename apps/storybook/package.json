@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@base-ui/react": "^1.4.1",
     "@ncai/design-icons-temp": "workspace:*",
     "@ncai/design-system-temp": "workspace:*",
     "@ncai/design-tokens-temp": "workspace:*",

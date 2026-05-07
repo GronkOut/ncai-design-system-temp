@@ -1,4 +1,3 @@
-import '@ncai/design-tokens-temp/styles.css';
 import '@ncai/design-system-temp/styles.css';
 import { Checkbox } from '@ncai/design-system-temp';
 import { StrictMode } from 'react';

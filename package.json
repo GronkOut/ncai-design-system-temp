@@ -10,7 +10,7 @@
     "changeset": "changeset",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "release": "pnpm build && pnpm smoke:pack && changeset publish",
+    "release": "pnpm typecheck && pnpm validate && pnpm test && pnpm build && pnpm smoke:pack && changeset publish",
     "storybook": "pnpm --filter @ncai/design-system-storybook-temp storybook",
     "test": "turbo test",
     "smoke:pack": "node scripts/smoke-pack.mjs",

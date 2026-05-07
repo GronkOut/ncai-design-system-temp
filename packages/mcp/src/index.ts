@@ -3,7 +3,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { approvedIcons, approvedTokens, componentMetadata } from '@ncai/design-system-metadata-temp';
 import { z } from 'zod';
+import { findRecipeCandidates } from './recipe';
 import { validateUiCode } from './validation';
+
+function findComponent(name: string) {
+  return componentMetadata.find((item) => item.name.toLowerCase() === name.toLowerCase());
+}
 
 const server = new McpServer(
   {
@@ -50,11 +55,11 @@ server.registerTool(
     title: 'Get component usage',
     description: 'Return usage rules, props, and examples for an approved component.',
     inputSchema: {
-      name: z.enum(['Checkbox'])
+      name: z.string()
     }
   },
   async ({ name }) => {
-    const component = componentMetadata.find((item) => item.name === name);
+    const component = findComponent(name);
     const examples = component?.examples ?? [];
 
     return {
@@ -74,21 +79,22 @@ server.registerTool(
     }
   },
   async ({ query }) => {
-    const normalizedQuery = query.toLowerCase();
-    const recipe = normalizedQuery.includes('checkbox')
+    const candidates = findRecipeCandidates(query);
+    const recipe = candidates.length > 0
       ? {
-          components: ['Checkbox'],
-          steps: [
-            'Checkbox를 @ncai/design-system-temp에서 import한다.',
-            '외부 label이 없으면 aria-label을 반드시 전달한다.',
-            'shape는 square 또는 circle만 사용한다.'
-          ],
-          example: '<Checkbox aria-label="항목 선택" />'
+          components: candidates.map((component) => component.name),
+          steps: candidates.flatMap((component) => [
+            `${component.name}를 @ncai/design-system-temp에서 import한다.`,
+            ...component.rules
+          ]),
+          examples: candidates.flatMap((component) => component.examples)
         }
       : {
           components: [],
-          steps: ['현재 MVP에서 승인된 컴포넌트는 Checkbox뿐입니다. 범위 확장이 필요하면 사용자에게 확인하세요.'],
-          example: null
+          steps: [
+            `현재 승인된 컴포넌트는 ${componentMetadata.map((component) => component.name).join(', ')}입니다. 적합한 컴포넌트가 없으면 사용자에게 범위 확장을 확인하세요.`
+          ],
+          examples: []
         };
 
     return {

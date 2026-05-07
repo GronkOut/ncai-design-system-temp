@@ -10,6 +10,7 @@ export const componentMetadataJsonSchema = {
     'baseUi',
     'props',
     'examples',
+    'keywords',
     'rules',
     'stylePolicy',
     'componentTokens',
@@ -43,6 +44,7 @@ export const componentMetadataJsonSchema = {
       }
     },
     examples: { type: 'array', items: { type: 'string', minLength: 1 }, minItems: 1 },
+    keywords: { type: 'array', items: { type: 'string', minLength: 1 }, minItems: 1 },
     rules: { type: 'array', items: { type: 'string', minLength: 1 }, minItems: 1 },
     stylePolicy: {
       type: 'object',
@@ -118,6 +120,7 @@ export type ComponentMetadataDefinition = {
   baseUi: readonly string[];
   props: Record<string, ComponentPropMetadata>;
   examples: readonly string[];
+  keywords: readonly string[];
   rules: readonly string[];
   stylePolicy: ComponentStylePolicy;
   componentTokens: readonly string[];
@@ -189,6 +192,10 @@ export function validateComponentMetadata(components: readonly ComponentMetadata
 
     if (!Array.isArray(component.examples) || component.examples.length === 0) {
       issues.push({ path: `${path}.examples`, message: 'At least one example is required.' });
+    }
+
+    if (!Array.isArray(component.keywords) || component.keywords.length === 0) {
+      issues.push({ path: `${path}.keywords`, message: 'At least one keyword is required.' });
     }
 
     if (!Array.isArray(component.rules) || component.rules.length === 0) {

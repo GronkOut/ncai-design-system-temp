@@ -1,5 +1,4 @@
 import type { Preview } from '@storybook/react-vite';
-import '@ncai/design-tokens-temp/styles.css';
 import '@ncai/design-system-temp/styles.css';
 import '../src/preview.css';
 

@@ -2,13 +2,15 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { basename, dirname, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const tempRoot = resolve(tmpdir(), 'ncai-design-system-pack-smoke');
 const tarballDir = resolve(tempRoot, 'tarballs');
 const consumerDir = resolve(tempRoot, 'consumer');
+const minimalConsumerDir = resolve(tempRoot, 'minimal-consumer');
+const npmConsumerDir = resolve(tempRoot, 'npm-consumer');
 const exampleSourceDir = resolve(root, 'examples/vite-react');
 const exampleConsumerDir = resolve(tempRoot, 'vite-react-example');
 
@@ -26,9 +28,15 @@ function run(command, args, cwd = root) {
   execFileSync(command, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
 }
 
+function runQuiet(command, args, cwd = root) {
+  return execFileSync(command, args, { cwd, encoding: 'utf8', shell: process.platform === 'win32' });
+}
+
 await rm(tempRoot, { force: true, recursive: true });
 await mkdir(tarballDir, { recursive: true });
 await mkdir(consumerDir, { recursive: true });
+await mkdir(minimalConsumerDir, { recursive: true });
+await mkdir(npmConsumerDir, { recursive: true });
 
 const packages = await Promise.all(
   packageDirs.map(async (packageDir) => {
@@ -55,7 +63,6 @@ await writeFile(
     {
       type: 'module',
       dependencies: {
-        '@base-ui/react': '^1.4.1',
         react: '^19.2.5',
         'react-dom': '^19.2.5',
         ...internalDeps
@@ -102,6 +109,31 @@ console.log('pack smoke passed');
 await writeFile(resolve(consumerDir, 'smoke.mjs'), smokeScript);
 run('node', ['smoke.mjs'], consumerDir);
 
+await writeFile(resolve(consumerDir, 'valid.tsx'), "import { Checkbox } from '@ncai/design-system-temp';\n<Checkbox aria-label=\"항목 선택\" />;\n");
+await writeFile(resolve(consumerDir, 'invalid.tsx'), "<div className=\"bg-[#fff]\" style={{ color: '#fff' }} />;\n");
+run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'validate', '--file', 'valid.tsx'], consumerDir);
+
+try {
+  runQuiet('pnpm', ['exec', 'ncai-design-system-cli-temp', 'validate', '--file', 'invalid.tsx'], consumerDir);
+  throw new Error('CLI validate should fail for arbitrary styles');
+} catch (error) {
+  if (error.status !== 1) throw error;
+}
+
+run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'setup-mcp'], consumerDir);
+run('pnpm', ['exec', 'ncai-design-system-cli-temp', 'install-skill'], consumerDir);
+
+const mcpConfig = JSON.parse(await readFile(resolve(consumerDir, '.cursor/mcp.json'), 'utf8'));
+if (!mcpConfig.mcpServers?.['ncai-design-system-temp']?.args?.includes('@ncai/design-system-mcp-temp')) {
+  throw new Error('setup-mcp did not create the expected MCP config');
+}
+
+const installedSkill = await readFile(resolve(consumerDir, '.cursor/skills/ncai-design-system/SKILL.md'), 'utf8');
+const packagedSkill = await readFile(resolve(consumerDir, 'node_modules/@ncai/design-system-skills-temp/company-ui/SKILL.md'), 'utf8');
+if (installedSkill !== packagedSkill) {
+  throw new Error('install-skill did not copy the packaged Skill source');
+}
+
 for (const item of packages) {
   const tarballPath = resolve(tarballDir, item.tarball);
   if (!existsSync(tarballPath)) {
@@ -113,8 +145,80 @@ const reactPackageJson = JSON.parse(await readFile(resolve(consumerDir, 'node_mo
 if (reactPackageJson.dependencies['@ncai/design-icons-temp']?.startsWith('workspace:')) {
   throw new Error('workspace protocol leaked into packed react package');
 }
+if (!reactPackageJson.dependencies['@base-ui/react']) {
+  throw new Error('@base-ui/react should be a runtime dependency of @ncai/design-system-temp');
+}
+if (reactPackageJson.peerDependencies?.['@base-ui/react']) {
+  throw new Error('@base-ui/react should not be exposed as a peer dependency');
+}
 
 console.log('All package tarballs install correctly in an isolated consumer.');
+
+await writeFile(
+  resolve(minimalConsumerDir, 'package.json'),
+  `${JSON.stringify(
+    {
+      type: 'module',
+      dependencies: {
+        react: '^19.2.5',
+        'react-dom': '^19.2.5',
+        '@ncai/design-system-temp': internalDeps['@ncai/design-system-temp'],
+        '@ncai/design-tokens-temp': internalDeps['@ncai/design-tokens-temp']
+      },
+      pnpm: {
+        overrides: internalDeps
+      }
+    },
+    null,
+    2
+  )}\n`
+);
+
+run('pnpm', ['install'], minimalConsumerDir);
+await writeFile(
+  resolve(minimalConsumerDir, 'minimal.mjs'),
+  `
+import { Checkbox } from '@ncai/design-system-temp';
+
+if (!Checkbox) throw new Error('Checkbox export is missing in minimal consumer');
+console.log('minimal install smoke passed');
+`
+);
+run('node', ['minimal.mjs'], minimalConsumerDir);
+const minimalReactPackageJson = JSON.parse(await readFile(resolve(minimalConsumerDir, 'node_modules/@ncai/design-system-temp/package.json'), 'utf8'));
+if (minimalReactPackageJson.exports?.['./styles.css'] !== './dist/styles.css') {
+  throw new Error('@ncai/design-system-temp/styles.css export is missing');
+}
+
+await writeFile(
+  resolve(npmConsumerDir, 'package.json'),
+  `${JSON.stringify(
+    {
+      type: 'module',
+      dependencies: {
+        react: '^19.2.5',
+        'react-dom': '^19.2.5'
+      },
+      devDependencies: {
+        '@ncai/design-system-cli-temp': `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-system-cli-temp')?.tarball ?? '')}`,
+        '@ncai/design-system-mcp-temp': `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-system-mcp-temp')?.tarball ?? '')}`,
+        '@ncai/design-system-skills-temp': `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-system-skills-temp')?.tarball ?? '')}`,
+        '@ncai/design-system-metadata-temp': `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-system-metadata-temp')?.tarball ?? '')}`,
+        '@ncai/design-icons-temp': `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-icons-temp')?.tarball ?? '')}`
+      }
+    },
+    null,
+    2
+  )}\n`
+);
+
+run('npm', ['install', `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-system-temp')?.tarball ?? '')}`, `file:${resolve(tarballDir, packages.find((item) => item.name === '@ncai/design-tokens-temp')?.tarball ?? '')}`], npmConsumerDir);
+
+await writeFile(resolve(npmConsumerDir, 'App.tsx'), "import '@ncai/design-system-temp/styles.css';\nimport { Checkbox } from '@ncai/design-system-temp';\n<Checkbox aria-label=\"npm 설치 확인\" />;\n");
+run('npx', ['ncai-design-system-cli-temp', 'doctor'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'setup-mcp'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'install-skill'], npmConsumerDir);
+run('npx', ['ncai-design-system-cli-temp', 'validate', '--file', 'App.tsx'], npmConsumerDir);
 
 await cp(exampleSourceDir, exampleConsumerDir, {
   recursive: true,
@@ -129,6 +233,7 @@ examplePackageJson.dependencies = {
   ...examplePackageJson.dependencies,
   ...internalDeps
 };
+delete examplePackageJson.dependencies['@base-ui/react'];
 examplePackageJson.pnpm = {
   ...(examplePackageJson.pnpm ?? {}),
   overrides: internalDeps

@@ -74,6 +74,7 @@ export const checkboxMetadata = {
     '<Checkbox aria-label="항목 선택" shape="circle" />',
     '<Checkbox aria-label="확인 필요" warning />'
   ],
+  keywords: ['checkbox', 'check box', '체크박스', '선택', '동의', '약관', '부분선택', '확인'],
   rules: [
     '폼 컨트롤에는 aria-label 또는 외부 label로 접근 가능한 이름을 제공한다.',
     'shape는 square와 circle만 사용한다.',

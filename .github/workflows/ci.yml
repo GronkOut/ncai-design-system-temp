@@ -30,6 +30,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Validate metadata and package contracts
+        run: pnpm validate
+
       - name: Test
         run: pnpm test
 

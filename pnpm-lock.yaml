@@ -56,9 +56,6 @@ importers:
 
   apps/storybook:
     dependencies:
-      '@base-ui/react':
-        specifier: ^1.4.1
-        version: 1.4.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ncai/design-icons-temp':
         specifier: workspace:*
         version: link:../../packages/icons
@@ -99,9 +96,6 @@ importers:
 
   examples/vite-react:
     dependencies:
-      '@base-ui/react':
-        specifier: ^1.4.1
-        version: 1.4.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ncai/design-system-temp':
         specifier: workspace:*
         version: link:../../packages/react
@@ -136,6 +130,9 @@ importers:
       '@ncai/design-system-metadata-temp':
         specifier: workspace:*
         version: link:../metadata
+      '@ncai/design-system-skills-temp':
+        specifier: workspace:*
+        version: link:../skills
     devDependencies:
       '@types/node':
         specifier: ^25.6.0
@@ -167,6 +164,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@base-ui/react':
+        specifier: ^1.4.1
+        version: 1.4.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@ncai/design-icons-temp':
         specifier: workspace:*
         version: link:../icons
@@ -177,9 +177,6 @@ importers:
         specifier: workspace:*
         version: link:../tokens
     devDependencies:
-      '@base-ui/react':
-        specifier: ^1.4.1
-        version: 1.4.1(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
