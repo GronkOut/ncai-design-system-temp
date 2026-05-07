@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1720" viewBox="0 0 2400 1720" role="img" aria-labelledby="title desc">
+  <title id="title">NC AI Design System Temp Architecture</title>
+  <desc id="desc">NC AI 디자인 시스템 저장소의 제공자 흐름, 사용자 소비 흐름, MCP와 Skill, CLI, Storybook, 테스트와 배포 관계도</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M2,2 L12,7 L2,12 Z" fill="#2563eb"/></marker>
+    <marker id="arrow-green" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M2,2 L12,7 L2,12 Z" fill="#15803d"/></marker>
+    <marker id="arrow-orange" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M2,2 L12,7 L2,12 Z" fill="#c2410c"/></marker>
+    <marker id="arrow-purple" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto"><path d="M2,2 L12,7 L2,12 Z" fill="#7c3aed"/></marker>
+    <marker id="legend-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7 Z" fill="#2563eb"/></marker>
+    <marker id="legend-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7 Z" fill="#15803d"/></marker>
+    <marker id="legend-orange" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7 Z" fill="#c2410c"/></marker>
+    <marker id="legend-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7 Z" fill="#7c3aed"/></marker>
+    <style>
+      .bg{fill:#f8fafc}
+      .lane{fill:none;stroke:#cbd5e1;stroke-width:1.5;stroke-dasharray:9 8;rx:28}
+      .card{fill:#fff;stroke:#cbd5e1;stroke-width:1.6;rx:20}
+      .blue{fill:#eff6ff;stroke:#93c5fd}.green{fill:#ecfdf5;stroke:#86efac}.orange{fill:#fff7ed;stroke:#fdba74}.purple{fill:#f5f3ff;stroke:#c4b5fd}.gray{fill:#f1f5f9;stroke:#cbd5e1}
+      .title{font:700 40px Arial,sans-serif;fill:#0f172a}
+      .subtitle{font:400 19px Arial,sans-serif;fill:#475569}
+      .section{font:700 25px Arial,sans-serif;fill:#0f172a}
+      .note{font:400 16px Arial,sans-serif;fill:#64748b}
+      .label{font:700 20px Arial,sans-serif;fill:#0f172a}
+      .body{font:400 15px Arial,sans-serif;fill:#334155}
+      .small{font:400 13px Arial,sans-serif;fill:#475569}
+      .mono{font:400 14px Consolas,Monaco,monospace;fill:#1e293b}
+      .bold{font:700 14px Consolas,Monaco,monospace;fill:#0f172a}
+      .chip{fill:#e2e8f0;stroke:#cbd5e1;stroke-width:1.2;rx:12}
+      .chipText{font:700 13px Arial,sans-serif;fill:#334155}
+      .ab{fill:none;stroke:#2563eb;stroke-width:2.6;marker-end:url(#arrow-blue)}
+      .ag{fill:none;stroke:#15803d;stroke-width:2.6;marker-end:url(#arrow-green)}
+      .ao{fill:none;stroke:#c2410c;stroke-width:2.6;marker-end:url(#arrow-orange)}
+      .ap{fill:none;stroke:#7c3aed;stroke-width:2.6;marker-end:url(#arrow-purple)}
+      .dash{stroke-dasharray:10 8}
+    </style>
+  </defs>
+
+  <rect class="bg" width="2400" height="1720"/>
+
+  <text class="title" x="90" y="70">NC AI Design System Temp 아키텍처</text>
+  <text class="subtitle" x="90" y="106">디자인 시스템을 npm 패키지, Storybook, MCP 서버, Agent Skill, CLI로 제공하고 소비하는 전체 흐름</text>
+
+  <rect class="chip" x="90" y="130" width="170" height="34"/><text class="chipText" x="112" y="152">pnpm workspace</text>
+  <rect class="chip" x="280" y="130" width="140" height="34"/><text class="chipText" x="302" y="152">Turbo tasks</text>
+  <rect class="chip" x="440" y="130" width="152" height="34"/><text class="chipText" x="462" y="152">CI: Node 22</text>
+  <rect class="chip" x="612" y="130" width="142" height="34"/><text class="chipText" x="634" y="152">Changesets</text>
+  <line x1="1660" y1="132" x2="1694" y2="132" stroke="#2563eb" stroke-width="2" marker-end="url(#legend-blue)"/><text class="small" x="1710" y="137">런타임/소비 의존</text>
+  <line x1="1660" y1="158" x2="1694" y2="158" stroke="#7c3aed" stroke-width="2" marker-end="url(#legend-purple)"/><text class="small" x="1710" y="163">metadata, MCP, Skill 지식 흐름</text>
+  <line x1="2030" y1="132" x2="2064" y2="132" stroke="#15803d" stroke-width="2" marker-end="url(#legend-green)"/><text class="small" x="2080" y="137">검증/배포</text>
+  <line x1="2030" y1="158" x2="2064" y2="158" stroke="#c2410c" stroke-width="2" marker-end="url(#legend-orange)"/><text class="small" x="2080" y="163">CLI/설치 자동화</text>
+
+  <rect class="lane" x="70" y="195" width="2260" height="465"/>
+  <text class="section" x="100" y="238">1. 운영자/개발자 제공 흐름</text>
+  <text class="note" x="100" y="265">저장소에서 토큰, metadata, React 컴포넌트, 아이콘, 에이전트 지식, CLI를 만들고 public npm 패키지로 배포한다.</text>
+
+  <rect class="card orange" x="110" y="315" width="310" height="205"/>
+  <text class="label" x="140" y="350">디자인 원천 자료</text>
+  <text class="bold" x="140" y="382">resource/token/figma.scss</text>
+  <text class="mono" x="140" y="408">resource/token/reset.scss</text>
+  <text class="mono" x="140" y="434">resource/token/typography.scss</text>
+  <text class="body" x="140" y="466">Figma 참고 토큰과 스타일 원천.</text>
+  <text class="body" x="140" y="492">토큰 패키지의 CSS variable 생성 기준.</text>
+
+  <rect class="card green" x="500" y="315" width="330" height="205"/>
+  <text class="label" x="530" y="350">토큰 패키지</text>
+  <text class="bold" x="530" y="382">packages/tokens</text>
+  <text class="mono" x="530" y="408">@ncai/design-tokens-temp</text>
+  <text class="body" x="530" y="440">--ncai-* CSS variables 제공.</text>
+  <text class="body" x="530" y="466">build: tsup + sass</text>
+  <text class="body" x="530" y="492">styles.css export 포함.</text>
+
+  <rect class="card blue" x="910" y="315" width="330" height="205"/>
+  <text class="label" x="940" y="350">아이콘 패키지</text>
+  <text class="bold" x="940" y="382">packages/icons</text>
+  <text class="mono" x="940" y="408">@ncai/design-icons-temp</text>
+  <text class="body" x="940" y="440">현재 승인 아이콘:</text>
+  <text class="body" x="940" y="466">CheckIcon, PartialIcon</text>
+  <text class="body" x="940" y="492">React icon component로 배포.</text>
+
+  <rect class="card purple" x="1320" y="300" width="380" height="235"/>
+  <text class="label" x="1350" y="335">Metadata 단일 소스</text>
+  <text class="bold" x="1350" y="367">packages/metadata</text>
+  <text class="mono" x="1350" y="393">@ncai/design-system-metadata-temp</text>
+  <text class="body" x="1350" y="425">componentMetadata: 현재 Checkbox 1개.</text>
+  <text class="body" x="1350" y="451">approvedTokens, approvedIcons 제공.</text>
+  <text class="body" x="1350" y="477">validateUiCode 정적 검사 제공.</text>
+  <text class="small" x="1350" y="505">정책 100% 보장이 아니라 기본 검증 도구.</text>
+
+  <rect class="card blue" x="1800" y="300" width="430" height="235"/>
+  <text class="label" x="1830" y="335">React UI 컴포넌트</text>
+  <text class="bold" x="1830" y="367">packages/react</text>
+  <text class="mono" x="1830" y="393">@ncai/design-system-temp</text>
+  <text class="body" x="1830" y="425">현재 공개 컴포넌트: Checkbox.</text>
+  <text class="body" x="1830" y="451">metadata re-export와 styles.css 제공.</text>
+  <text class="body" x="1830" y="477">Base UI는 내부 접근성 primitive.</text>
+  <text class="body" x="1830" y="503">외부 앱은 DS 컴포넌트만 import.</text>
+
+  <path class="ao" d="M420 418 C455 418,465 418,500 418"/>
+  <path class="ab" d="M830 418 C865 418,875 418,910 418"/>
+  <path class="ap" d="M1240 418 C1275 418,1285 418,1320 418"/>
+  <path class="ap" d="M1700 418 C1735 418,1765 418,1800 418"/>
+  <path class="ag dash" d="M830 488 C1030 610,1580 610,1800 488"/>
+  <path class="ab dash" d="M1240 488 C1415 590,1640 590,1800 502"/>
+  <path class="ap dash" d="M1510 535 C1510 580,1510 610,1510 642"/>
+
+  <rect class="lane" x="70" y="705" width="2260" height="430"/>
+  <text class="section" x="100" y="748">2. 문서화, 에이전트 제공, 설치 자동화</text>
+  <text class="note" x="100" y="775">Storybook은 개발/시각 확인용 앱, MCP와 Skill은 에이전트의 디자인 시스템 사용 규칙, CLI는 소비자 프로젝트 설치와 진단 진입점이다.</text>
+
+  <rect class="card" x="110" y="835" width="350" height="215"/>
+  <text class="label" x="140" y="870">Storybook 개발 앱</text>
+  <text class="bold" x="140" y="902">apps/storybook</text>
+  <text class="mono" x="140" y="928">pnpm storybook</text>
+  <text class="mono" x="140" y="954">storybook dev -p 6006</text>
+  <text class="body" x="140" y="986">Checkbox stories와 preview.css.</text>
+  <text class="body" x="140" y="1012">a11y addon은 test: todo 설정.</text>
+  <text class="small" x="140" y="1038">자동 접근성 게이트로 과장하지 않음.</text>
+
+  <rect class="card" x="540" y="835" width="350" height="215"/>
+  <text class="label" x="570" y="870">Vite 소비 예제</text>
+  <text class="bold" x="570" y="902">examples/vite-react</text>
+  <text class="mono" x="570" y="928">pnpm --filter ... dev</text>
+  <text class="mono" x="570" y="954">pnpm --filter ... build</text>
+  <text class="body" x="570" y="986">외부 앱 설치 방식에 가까운 예제.</text>
+  <text class="body" x="570" y="1012">packed tarball로 smoke build 확인.</text>
+
+  <rect class="card purple" x="970" y="815" width="390" height="255"/>
+  <text class="label" x="1000" y="850">MCP 서버</text>
+  <text class="bold" x="1000" y="882">packages/mcp</text>
+  <text class="mono" x="1000" y="908">@ncai/design-system-mcp-temp</text>
+  <text class="body" x="1000" y="940">stdio MCP 서버.</text>
+  <text class="mono" x="1000" y="966">npx -y @ncai/design-system-mcp-temp</text>
+  <text class="body" x="1000" y="998">search_components, get_component_usage,</text>
+  <text class="body" x="1000" y="1024">get_component_recipe, token/icon search,</text>
+  <text class="body" x="1000" y="1050">validate_ui_code 제공.</text>
+
+  <rect class="card purple" x="1440" y="815" width="370" height="255"/>
+  <text class="label" x="1470" y="850">Agent Skill 패키지</text>
+  <text class="bold" x="1470" y="882">packages/skills</text>
+  <text class="mono" x="1470" y="908">@ncai/design-system-skills-temp</text>
+  <text class="body" x="1470" y="940">company-ui/SKILL.md를 배포.</text>
+  <text class="body" x="1470" y="966">UI 생성 전 MCP 조회를 지시.</text>
+  <text class="body" x="1470" y="992">Base UI 직접 import 금지.</text>
+  <text class="body" x="1470" y="1018">토큰/아이콘/Checkbox 규칙 포함.</text>
+
+  <rect class="card orange" x="1890" y="800" width="370" height="285"/>
+  <text class="label" x="1920" y="835">CLI 설치 진입점</text>
+  <text class="bold" x="1920" y="867">packages/cli</text>
+  <text class="mono" x="1920" y="893">@ncai/design-system-cli-temp</text>
+  <text class="mono" x="1920" y="925">setup-mcp --agent</text>
+  <text class="small" x="1920" y="949">cursor | vscode | jetbrains | manual</text>
+  <text class="mono" x="1920" y="975">install-skill --agent</text>
+  <text class="small" x="1920" y="999">cursor | vscode | jetbrains | manual</text>
+  <text class="mono" x="1920" y="1025">validate --file &lt;path&gt;</text>
+  <text class="mono" x="1920" y="1051">doctor --cwd &lt;path&gt;</text>
+
+  <path class="ab dash" d="M2015 535 C1650 690,760 690,460 880"/>
+  <path class="ab dash" d="M2015 535 C1600 700,980 700,890 905"/>
+  <path class="ap" d="M1510 535 C1430 670,1280 730,1165 815"/>
+  <path class="ap" d="M1510 535 C1580 670,1620 735,1625 815"/>
+  <path class="ap" d="M1700 440 C1870 610,2020 675,2075 800"/>
+  <path class="ap" d="M1360 942 C1395 942,1405 942,1440 942"/>
+  <path class="ao" d="M1810 942 C1845 942,1855 942,1890 942"/>
+
+  <rect class="lane" x="70" y="1180" width="2260" height="315"/>
+  <text class="section" x="100" y="1223">3. 사용자 소비 흐름</text>
+  <text class="note" x="100" y="1250">사용자는 npm으로 React 패키지를 설치하고, 에이전트 사용자는 CLI로 MCP와 Skill을 붙여 코드 생성 전후 검증을 수행한다.</text>
+
+  <rect class="card blue" x="110" y="1305" width="405" height="145"/>
+  <text class="label" x="140" y="1340">React 앱 소비자</text>
+  <text class="mono" x="140" y="1374">npm install @ncai/design-system-temp</text>
+  <text class="mono" x="140" y="1400">npm install @ncai/design-tokens-temp</text>
+  <text class="body" x="140" y="1430">아이콘 직접 사용 시 icons 패키지 추가.</text>
+
+  <rect class="card blue" x="590" y="1305" width="380" height="145"/>
+  <text class="label" x="620" y="1340">앱 코드 사용</text>
+  <text class="mono" x="620" y="1374">import '@ncai/design-system-temp/</text>
+  <text class="mono" x="620" y="1400">styles.css'</text>
+  <text class="mono" x="620" y="1426">import { Checkbox } from '@ncai/...'</text>
+  <text class="body" x="620" y="1448">승인 API와 접근 가능한 이름을 사용.</text>
+
+  <rect class="card purple" x="1045" y="1290" width="425" height="175"/>
+  <text class="label" x="1075" y="1325">에이전트 소비</text>
+  <text class="mono" x="1075" y="1359">npx ... setup-mcp --agent cursor</text>
+  <text class="mono" x="1075" y="1385">npx ... install-skill --agent cursor</text>
+  <text class="body" x="1075" y="1417">MCP에서 컴포넌트/토큰/아이콘 조회.</text>
+  <text class="body" x="1075" y="1443">작성 후 validate_ui_code로 기본 검증.</text>
+
+  <rect class="card orange" x="1545" y="1290" width="420" height="175"/>
+  <text class="label" x="1575" y="1325">사용자 프로젝트 진단</text>
+  <text class="mono" x="1575" y="1359">npx @ncai/design-system-cli-temp doctor</text>
+  <text class="mono" x="1575" y="1385">npx ... validate --file src/App.tsx</text>
+  <text class="body" x="1575" y="1417">React 버전, 필수 패키지, styles.css,</text>
+  <text class="body" x="1575" y="1443">선택 agent의 MCP/Skill 설정을 확인.</text>
+
+  <rect class="card green" x="2040" y="1305" width="220" height="145"/>
+  <text class="label" x="2070" y="1340">소비 결과</text>
+  <text class="body" x="2070" y="1374">승인 토큰</text>
+  <text class="body" x="2070" y="1400">승인 아이콘</text>
+  <text class="body" x="2070" y="1426">승인 컴포넌트</text>
+
+  <path class="ab" d="M515 1378 C545 1378,560 1378,590 1378"/>
+  <path class="ap" d="M970 1378 C1000 1378,1015 1378,1045 1378"/>
+  <path class="ao" d="M1470 1378 C1500 1378,1515 1378,1545 1378"/>
+  <path class="ag" d="M1965 1378 C1995 1378,2010 1378,2040 1378"/>
+  <path class="ap dash" d="M1165 1070 C1165 1160,1235 1205,1257 1290"/>
+  <path class="ap dash" d="M1625 1070 C1570 1160,1320 1195,1257 1290"/>
+  <path class="ao dash" d="M2075 1085 C2030 1195,1810 1215,1755 1290"/>
+
+  <rect class="lane" x="70" y="1535" width="2260" height="145"/>
+  <text class="section" x="100" y="1578">4. 테스트, 검증, 배포 레인</text>
+  <text class="note" x="100" y="1605">CI는 PR/main push에서 실행되고, Release 워크플로는 수동 실행 후 Changesets로 npm publish를 수행한다.</text>
+
+  <rect class="card gray" x="105" y="1625" width="245" height="40"/><text class="bold" x="125" y="1650">GitHub Actions</text>
+  <rect class="card gray" x="395" y="1625" width="235" height="40"/><text class="bold" x="415" y="1650">pnpm typecheck</text>
+  <rect class="card gray" x="675" y="1625" width="215" height="40"/><text class="bold" x="695" y="1650">pnpm validate</text>
+  <rect class="card gray" x="935" y="1625" width="190" height="40"/><text class="bold" x="955" y="1650">pnpm test</text>
+  <rect class="card gray" x="1170" y="1625" width="190" height="40"/><text class="bold" x="1190" y="1650">pnpm build</text>
+  <rect class="card gray" x="1405" y="1625" width="285" height="40"/><text class="bold" x="1425" y="1650">pnpm smoke:pack</text>
+  <rect class="card green" x="1735" y="1625" width="260" height="40"/><text class="bold" x="1755" y="1650">changeset publish</text>
+
+  <path class="ag" d="M350 1645 C365 1645,380 1645,395 1645"/>
+  <path class="ag" d="M630 1645 C645 1645,660 1645,675 1645"/>
+  <path class="ag" d="M890 1645 C905 1645,920 1645,935 1645"/>
+  <path class="ag" d="M1125 1645 C1140 1645,1155 1645,1170 1645"/>
+  <path class="ag" d="M1360 1645 C1375 1645,1390 1645,1405 1645"/>
+  <path class="ag" d="M1690 1645 C1705 1645,1720 1645,1735 1645"/>
+
+  <text class="small" x="100" y="1698">테스트 위치: packages/react/src/components/Checkbox/Checkbox.test.tsx, packages/mcp/src/validation.test.ts, packages/mcp/src/recipe.test.ts, packages/metadata/scripts/validate-metadata.mjs, scripts/smoke-pack.mjs</text>
+</svg>

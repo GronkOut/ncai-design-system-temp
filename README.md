@@ -6,6 +6,12 @@ NC AI 디자인 시스템의 React MVP 저장소입니다. Base UI는 내부 접
 
 ---
 
+## 아키텍처
+
+<img src="./docs/architecture.svg" alt="NC AI Design System Temp 아키텍처" width="100%" />
+
+---
+
 ## 목차
 
 - [저장소 이해하기](#저장소-이해하기)
