@@ -1,5 +1,5 @@
 ---
-name: ncai-design-system
+name: ncai-design-system-temp
 description: Builds and reviews React UI with NC AI Design System, Base UI-backed components, approved design tokens, approved icons, MCP component metadata, and UI validation. Use when creating, refactoring, reviewing, or styling Checkbox, design-system UI, Base UI wrappers, tokens, icons, Storybook stories, or MCP-backed UI code.
 ---
 

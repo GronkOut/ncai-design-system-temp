@@ -128,7 +128,7 @@ if (!mcpConfig.mcpServers?.['ncai-design-system-temp']?.args?.includes('@ncai/de
   throw new Error('setup-mcp did not create the expected MCP config');
 }
 
-const installedSkill = await readFile(resolve(consumerDir, '.cursor/skills/ncai-design-system/SKILL.md'), 'utf8');
+const installedSkill = await readFile(resolve(consumerDir, '.cursor/skills/ncai-design-system-temp/SKILL.md'), 'utf8');
 const packagedSkill = await readFile(resolve(consumerDir, 'node_modules/@ncai/design-system-skills-temp/company-ui/SKILL.md'), 'utf8');
 if (installedSkill !== packagedSkill) {
   throw new Error('install-skill did not copy the packaged Skill source');

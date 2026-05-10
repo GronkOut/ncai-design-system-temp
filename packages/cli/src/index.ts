@@ -20,6 +20,7 @@ const mcpPackage = '@ncai/design-system-mcp-temp';
 const skillsPackage = '@ncai/design-system-skills-temp';
 const cliPackage = '@ncai/design-system-cli-temp';
 const mcpServerName = 'ncai-design-system-temp';
+const skillName = 'ncai-design-system-temp';
 
 const ncaiPackages = [runtimePackage, tokenPackage, iconPackage, mcpPackage, skillsPackage, cliPackage] as const;
 const agentChoices = ['cursor', 'vscode', 'jetbrains', 'manual'] as const;
@@ -220,8 +221,8 @@ async function installSkill() {
   if (agent === 'cursor') {
     const target =
       optionValue('--target') === 'cursor-user'
-        ? join(homedir(), '.cursor', 'skills', 'ncai-design-system')
-        : resolve(optionValue('--path') ?? '.cursor/skills/ncai-design-system');
+        ? join(homedir(), '.cursor', 'skills', skillName)
+        : resolve(optionValue('--path') ?? `.cursor/skills/${skillName}`);
 
     await mkdir(target, { recursive: true });
     await writeFile(join(target, 'SKILL.md'), skill, 'utf8');
@@ -505,7 +506,7 @@ async function diagnoseMcp(projectRoot: string): Promise<Diagnostic[]> {
   const server = mcpConfig?.mcpServers?.[mcpServerName];
   const hasMcpPackage = server?.args?.some((arg) => arg.includes(mcpPackage));
 
-  const skillPath = join(projectRoot, '.cursor', 'skills', 'ncai-design-system', 'SKILL.md');
+  const skillPath = join(projectRoot, '.cursor', 'skills', skillName, 'SKILL.md');
 
   return [
     server && hasMcpPackage

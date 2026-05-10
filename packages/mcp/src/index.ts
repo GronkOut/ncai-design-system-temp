@@ -12,7 +12,7 @@ function findComponent(name: string) {
 
 const server = new McpServer(
   {
-    name: 'ncai-design-system',
+    name: 'ncai-design-system-temp',
     version: '0.1.0'
   },
   {
